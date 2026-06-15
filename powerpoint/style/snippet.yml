@@ -29,12 +29,12 @@ script:
     // ── 글자 스타일
 
     const FONTS = [
-      { name: "슬라이드제목", fontName: "페이퍼로지 7 Bold", color: "#FF979C", bold: true, italic: false },
-      { name: "슬라이드목차", fontName: "페이퍼로지 6 SemiBold", color: "#1E1B1B", bold: true, italic: false },
-      { name: "본문제목", fontName: "Pretendard SemiBold", color: "#0D0D0D", bold: true, italic: false },
-      { name: "본문제목W", fontName: "Pretendard SemiBold", color: "#FFFFFF", bold: true, italic: false },
-      { name: "본문일반", fontName: "Pretendard Medium", color: "#000000", bold: false, italic: false },
-      { name: "본문저강조", fontName: "Pretendard Medium", color: "#7F7F7F", bold: false, italic: false },
+      { name: "제목 1", fontName: "페이퍼로지 7 Bold", color: "#FF979C", bold: true, italic: false },
+      { name: "제목 2", fontName: "페이퍼로지 6 SemiBold", color: "#1E1B1B", bold: true, italic: false },
+      { name: "본문제목 1", fontName: "Pretendard SemiBold", color: "#0D0D0D", bold: true, italic: false },
+      { name: "본문제목 2", fontName: "Pretendard SemiBold", color: "#FFFFFF", bold: true, italic: false },
+      { name: "본문 1", fontName: "Pretendard Medium", color: "#000000", bold: false, italic: false },
+      { name: "본문 2", fontName: "Pretendard Medium", color: "#7F7F7F", bold: false, italic: false },
       { name: "본문강조1", fontName: "Pretendard Medium", color: "#FE2E36", bold: false, italic: false },
       { name: "본문강조2", fontName: "Pretendard Medium", color: "#850107", bold: false, italic: false },
     ];
@@ -281,37 +281,29 @@ script:
       FONTS.forEach((fontDef, idx) => {
         const btn = document.createElement("button");
         btn.className = "font-style-btn";
-        btn.title = `${fontDef.fontName} / ${fontDef.name}`;
+        btn.title = `${fontDef.name} / ${fontDef.fontName}`;
 
         const sampleBg = isLightColor(fontDef.color) ? "#1a1a1a" : "#ffffff";
         btn.style.backgroundColor = sampleBg;
 
-        const fontNameSpan = document.createElement("span");
-        fontNameSpan.className = "font-btn-fontname";
-        fontNameSpan.textContent = fontDef.fontName;
-        fontNameSpan.style.color = isLightColor(fontDef.color) ? "#888" : "#999";
-
-        const sampleSpan = document.createElement("span");
-        sampleSpan.className = "font-btn-sample";
-        sampleSpan.textContent = "가나Aa";
-        sampleSpan.style.fontFamily = `'${fontDef.fontName}', sans-serif`;
-        sampleSpan.style.fontWeight = fontDef.bold ? "700" : "400";
-        sampleSpan.style.fontStyle = fontDef.italic ? "italic" : "normal";
-        sampleSpan.style.color = fontDef.color;
-
+        // 첫줄: name (14px)
         const nameSpan = document.createElement("span");
         nameSpan.className = "font-btn-name";
         nameSpan.textContent = fontDef.name;
-        nameSpan.style.color = isLightColor(fontDef.color) ? "#aaa" : "#666";
+        nameSpan.style.color = fontDef.color;
 
-        btn.appendChild(fontNameSpan);
-        btn.appendChild(sampleSpan);
+        // 둘째줄: fontName (8px)
+        const fontNameSpan = document.createElement("span");
+        fontNameSpan.className = "font-btn-fontname";
+        fontNameSpan.textContent = fontDef.fontName;
+        fontNameSpan.style.color = isLightColor(fontDef.color) ? "#aaa" : "#888";
+
         btn.appendChild(nameSpan);
+        btn.appendChild(fontNameSpan);
         btn.addEventListener("click", () => handleFontStyleClick(idx));
         container.appendChild(btn);
       });
     }
-
 
     /* ===================================================
        색상 그리드 렌더
@@ -859,51 +851,41 @@ script:
           flex-direction: column;
           align-items: center;
           justify-content: center;
-          width: 48px;
-          height: 48px;
-          padding: 2px 1px;
+          width: 72px;
+          height: 36px;
+          padding: 3px 4px;
           border: 1px solid #d0d0d0;
           border-radius: 3px;
           cursor: pointer;
           overflow: hidden;
           flex-shrink: 0;
-          gap: 1px;
+          gap: 2px;
           transition: border-color .12s, opacity .12s;
         }
         .font-style-btn:hover  { border-color: #215F9A; opacity: 0.82; }
         .font-style-btn:active { opacity: 0.65; }
 
-        .font-btn-fontname {
-          font-size: 6px;
-          font-family: 'Segoe UI', 'Malgun Gothic', sans-serif;
-          font-weight: 400;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          max-width: 44px;
-          pointer-events: none;
-          user-select: none;
-          line-height: 1.1;
-          text-align: center;
-        }
-        .font-btn-sample {
-          font-size: 14px;
-          white-space: nowrap;
-          overflow: hidden;
-          pointer-events: none;
-          user-select: none;
-          line-height: 1.2;
-          max-width: 46px;
-          text-align: center;
-        }
         .font-btn-name {
-          font-size: 6px;
+          font-size: 14px;
           font-family: 'Segoe UI', 'Malgun Gothic', sans-serif;
           font-weight: 600;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
-          max-width: 44px;
+          max-width: 68px;
+          pointer-events: none;
+          user-select: none;
+          line-height: 1.2;
+          text-align: center;
+        }
+        .font-btn-fontname {
+          font-size: 8px;
+          font-family: 'Segoe UI', 'Malgun Gothic', sans-serif;
+          font-weight: 400;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          max-width: 68px;
           pointer-events: none;
           user-select: none;
           line-height: 1.1;
