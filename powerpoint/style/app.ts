@@ -1,0 +1,930 @@
+"use strict";
+
+/* ===================================================
+   상수 (필요 시 직접 수정)
+   =================================================== */
+
+// ── 슬라이드 크기 프리셋 (인덱스만 바꿔서 사용)
+const SLIDE_PRESETS = [
+  { name: "4:3 표준", wCm: 25.4, hCm: 19.05 },
+  { name: "A4 가로", wCm: 27.517, hCm: 19.05 },
+  { name: "A4 세로", wCm: 19.05, hCm: 27.517 },
+  { name: "16:9 와이드", wCm: 33.867, hCm: 19.05 },
+];
+
+const SLIDE = SLIDE_PRESETS[0]; // ← 0=4:3, 1=A4가로, 2=A4세로, 3=16:9
+
+// ── 글자 스타일
+const FONTS = [
+  { name: "슬라이드제목", fontName: "페이퍼로지 7 Bold", color: "#FF979C", bold: true, italic: false },
+  { name: "슬라이드목차", fontName: "페이퍼로지 6 SemiBold", color: "#1E1B1B", bold: true, italic: false },
+  { name: "본문제목", fontName: "Pretendard SemiBold", color: "#0D0D0D", bold: true, italic: false },
+  { name: "본문제목W", fontName: "Pretendard SemiBold", color: "#FFFFFF", bold: true, italic: false },
+  { name: "본문일반", fontName: "Pretendard Medium", color: "#000000", bold: false, italic: false },
+  { name: "본문저강조", fontName: "Pretendard Medium", color: "#7F7F7F", bold: false, italic: false },
+  { name: "본문강조1", fontName: "Pretendard Medium", color: "#FE2E36", bold: false, italic: false },
+  { name: "본문강조2", fontName: "Pretendard Medium", color: "#850107", bold: false, italic: false },
+];
+
+// ── 색상 팔레트
+const COLORS = [
+  { name: "01", color: "#262626" },
+  { name: "02", color: "#3E414E" },
+  { name: "03", color: "#5F5F5F" },
+  { name: "04", color: "#969696" },
+  { name: "05", color: "#BFBFBF" },
+  { name: "06", color: "#D9D9D9" },
+  { name: "07", color: "#F2F2F2" },
+  { name: "08", color: "#FFFFFF" },
+  { name: "09", color: "#FFEFF0" },
+  { name: "10", color: "#FF979C" },
+  { name: "11", color: "#FE2E36" },
+  { name: "12", color: "#850107" },
+];
+
+// ── 선 두께 (pt)
+const LINE_WEIGHTS = [0.5, 1, 1.5, 2];
+
+// ── 사이즈 변경 간격 (cm)
+const SIZE_STEPS_CM = [0.1, 0.2];
+
+// ── 단위 변환
+const CM_TO_PT = 28.3465;
+
+/* ===================================================
+   전역 상태
+   =================================================== */
+let statusTimer: any = null;
+let currentStepCm: number = 0.2;
+
+/* ===================================================
+   밝기 판별 유틸
+   =================================================== */
+function isLightColor(hex: string): boolean {
+  const h = hex.replace("#", "");
+  const r = parseInt(h.substring(0, 2), 16) / 255;
+  const g = parseInt(h.substring(2, 4), 16) / 255;
+  const b = parseInt(h.substring(4, 6), 16) / 255;
+  const toLinear = (c: number) => (c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4));
+  const L = 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
+  return L > 0.35;
+}
+
+/* ===================================================
+   진입점
+   =================================================== */
+Office.onReady((info) => {
+  if (info.host !== Office.HostType.PowerPoint) {
+    document.body.innerHTML = '<p style="color:red;padding:12px;">PowerPoint 환경에서만 실행 가능합니다.</p>';
+    return;
+  }
+  buildDOM();
+  injectStyles();
+  renderFontGrid();
+  renderColorGrids();
+});
+
+/* ===================================================
+   DOM 생성
+   =================================================== */
+function buildDOM() {
+  document.body.innerHTML = "";
+  const app = document.createElement("div");
+  app.id = "app";
+
+  app.appendChild(buildFontSection());
+  app.appendChild(buildColorSection("section-fill", "grid-fill", "채우기", "icon-fill", "fill"));
+  app.appendChild(buildColorSection("section-line", "grid-line", "선색", "icon-line", "line"));
+  app.appendChild(buildSizeSection());
+
+  const statusBar = document.createElement("div");
+  statusBar.id = "status-bar";
+  const statusMsg = document.createElement("span");
+  statusMsg.id = "status-message";
+  statusMsg.textContent = "객체를 선택하면 스타일이 즉시 적용됩니다.";
+  statusBar.appendChild(statusMsg);
+
+  document.body.appendChild(app);
+  document.body.appendChild(statusBar);
+}
+
+/* ─── 글자스타일 섹션 ─── */
+function buildFontSection(): HTMLElement {
+  const section = document.createElement("section");
+  section.id = "section-font";
+  section.className = "palette-section";
+  section.appendChild(buildSectionTitle("T", "icon-font", "글자스타일"));
+  const grid = document.createElement("div");
+  grid.id = "grid-font";
+  grid.className = "font-grid";
+  section.appendChild(grid);
+  return section;
+}
+
+/* ─── 색상 섹션 (채우기 / 선색) ─── */
+function buildColorSection(
+  id: string,
+  gridId: string,
+  label: string,
+  iconClass: string,
+  applyType: string,
+): HTMLElement {
+  const section = document.createElement("section");
+  section.id = id;
+  section.className = "palette-section";
+  section.appendChild(buildSectionTitle("", iconClass, label));
+
+  const grid = document.createElement("div");
+  grid.id = gridId;
+  grid.className = "color-grid";
+  section.appendChild(grid);
+
+  if (applyType === "line") {
+    const weightRow = document.createElement("div");
+    weightRow.className = "weight-row";
+
+    const wLabel = document.createElement("span");
+    wLabel.className = "weight-label";
+    wLabel.textContent = "선굵기";
+    weightRow.appendChild(wLabel);
+
+    LINE_WEIGHTS.forEach((pt) => {
+      const btn = document.createElement("button");
+      btn.className = "weight-btn";
+      btn.textContent = `${pt}pt`;
+      btn.addEventListener("click", () => handleWeightClick(pt));
+      weightRow.appendChild(btn);
+    });
+
+    const btnSolid = document.createElement("button");
+    btnSolid.className = "line-style-btn";
+    btnSolid.title = "직선";
+    btnSolid.innerHTML = `<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+          <line x1="2" y1="10" x2="18" y2="10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>`;
+    btnSolid.addEventListener("click", () => handleLineStyleClick("solid"));
+    weightRow.appendChild(btnSolid);
+
+    const btnDash = document.createElement("button");
+    btnDash.className = "line-style-btn";
+    btnDash.title = "둥근점선";
+    btnDash.innerHTML = `<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+          <line x1="2" y1="10" x2="18" y2="10" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-dasharray="0.1 4"/>
+        </svg>`;
+    btnDash.addEventListener("click", () => handleLineStyleClick("roundDot"));
+    weightRow.appendChild(btnDash);
+
+    section.appendChild(weightRow);
+  }
+
+  return section;
+}
+
+/* ─── 사이즈 변경 섹션 ─── */
+function buildSizeSection(): HTMLElement {
+  const section = document.createElement("section");
+  section.id = "section-size";
+  section.className = "palette-section";
+  section.appendChild(buildSectionTitle("⇔", "icon-size", "사이즈 변경"));
+
+  const panel = document.createElement("div");
+  panel.className = "size-panel";
+
+  const stepRow = document.createElement("div");
+  stepRow.className = "size-step-row";
+
+  const stepLabel = document.createElement("span");
+  stepLabel.className = "size-step-label";
+  stepLabel.textContent = "간격";
+  stepRow.appendChild(stepLabel);
+
+  SIZE_STEPS_CM.forEach((s) => {
+    const btn = document.createElement("button");
+    btn.className = `size-step-btn${s === currentStepCm ? " active" : ""}`;
+    btn.textContent = `${s} cm`;
+    btn.addEventListener("click", () => {
+      currentStepCm = s;
+      document.querySelectorAll(".size-step-btn").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+    });
+    stepRow.appendChild(btn);
+  });
+
+  const applyBtn = document.createElement("button");
+  applyBtn.className = "size-apply-inline-btn";
+  applyBtn.textContent = "일괄적용";
+  applyBtn.addEventListener("click", applyRoundedSizeToSelection);
+  stepRow.appendChild(applyBtn);
+
+  panel.appendChild(stepRow);
+  section.appendChild(panel);
+  return section;
+}
+
+/* ─── 공통: 섹션 타이틀 ─── */
+function buildSectionTitle(iconText: string, iconClass: string, label: string): HTMLElement {
+  const h2 = document.createElement("h2");
+  h2.className = "section-title";
+  const icon = document.createElement("span");
+  icon.className = `section-icon ${iconClass}`;
+  icon.textContent = iconText;
+  h2.appendChild(icon);
+  h2.appendChild(document.createTextNode(label));
+  return h2;
+}
+
+/* ===================================================
+   글자스타일 그리드 렌더 (48×48 카드)
+   =================================================== */
+function renderFontGrid() {
+  const container = document.getElementById("grid-font");
+  if (!container) return;
+  container.innerHTML = "";
+
+  FONTS.forEach((fontDef, idx) => {
+    const btn = document.createElement("button");
+    btn.className = "font-style-btn";
+    btn.title = `${fontDef.fontName} / ${fontDef.name}`;
+
+    const sampleBg = isLightColor(fontDef.color) ? "#1a1a1a" : "#ffffff";
+    btn.style.backgroundColor = sampleBg;
+
+    const fontNameSpan = document.createElement("span");
+    fontNameSpan.className = "font-btn-fontname";
+    fontNameSpan.textContent = fontDef.fontName;
+    fontNameSpan.style.color = isLightColor(fontDef.color) ? "#888" : "#999";
+
+    const sampleSpan = document.createElement("span");
+    sampleSpan.className = "font-btn-sample";
+    sampleSpan.textContent = "가나Aa";
+    sampleSpan.style.fontFamily = `'${fontDef.fontName}', sans-serif`;
+    sampleSpan.style.fontWeight = fontDef.bold ? "700" : "400";
+    sampleSpan.style.fontStyle = fontDef.italic ? "italic" : "normal";
+    sampleSpan.style.color = fontDef.color;
+
+    const nameSpan = document.createElement("span");
+    nameSpan.className = "font-btn-name";
+    nameSpan.textContent = fontDef.name;
+    nameSpan.style.color = isLightColor(fontDef.color) ? "#aaa" : "#666";
+
+    btn.appendChild(fontNameSpan);
+    btn.appendChild(sampleSpan);
+    btn.appendChild(nameSpan);
+    btn.addEventListener("click", () => handleFontStyleClick(idx));
+    container.appendChild(btn);
+  });
+}
+
+/* ===================================================
+   색상 그리드 렌더
+   ─ color-chip 클릭 → 색상 변경만
+   ─ color-hex  클릭 → 클립보드 복사만
+   =================================================== */
+function renderColorGrids() {
+  renderColorGrid("grid-fill", "fill");
+  renderColorGrid("grid-line", "line");
+}
+
+function renderColorGrid(gridId: string, applyType: string) {
+  const container = document.getElementById(gridId);
+  if (!container) return;
+  container.innerHTML = "";
+
+  // ── "없음" 항목 ──
+  const noneItem = document.createElement("div");
+  noneItem.className = "color-item";
+
+  const noneChip = document.createElement("div");
+  noneChip.className = "color-chip chip-none";
+  noneChip.title = "없음 적용";
+  // 칩 클릭 → 색상 변경만
+  noneChip.addEventListener("click", (e) => {
+    e.stopPropagation();
+    applyColorToSelection(applyType, "NONE");
+  });
+
+  const noneLabel = document.createElement("span");
+  noneLabel.className = "color-hex";
+  noneLabel.textContent = "없음";
+  // "없음" 텍스트는 복사 불가 → 아무 동작 없음
+
+  noneItem.appendChild(noneChip);
+  noneItem.appendChild(noneLabel);
+  container.appendChild(noneItem);
+
+  // ── 색상 항목 ──
+  COLORS.forEach(({ color }) => {
+    const item = document.createElement("div");
+    item.className = "color-item";
+
+    // 칩(사각형) → 색상 변경만
+    const chip = document.createElement("div");
+    chip.className = "color-chip";
+    chip.style.backgroundColor = color;
+    chip.title = `${color} 적용`;
+    chip.addEventListener("click", (e) => {
+      e.stopPropagation();
+      applyColorToSelection(applyType, color);
+    });
+
+    // 텍스트(hex) → 클립보드 복사만
+    const label = document.createElement("span");
+    label.className = "color-hex color-hex-copyable";
+    label.textContent = color;
+    label.title = `${color} 복사`;
+    label.addEventListener("click", (e) => {
+      e.stopPropagation();
+      copyToClipboard(color);
+    });
+
+    item.appendChild(chip);
+    item.appendChild(label);
+    container.appendChild(item);
+  });
+}
+
+/* ===================================================
+   이벤트 핸들러 — 글자스타일
+   =================================================== */
+async function handleFontStyleClick(fontIdx: number) {
+  const fontDef = FONTS[fontIdx];
+  try {
+    await PowerPoint.run(async (context) => {
+      const sel = context.presentation.getSelectedShapes();
+      sel.load("items/id");
+      await context.sync();
+      if (sel.items.length === 0) {
+        setStatus("선택된 객체가 없습니다.", "error");
+        return;
+      }
+
+      const slide = context.presentation.getSelectedSlides().getItemAt(0);
+      const allShapes = slide.shapes;
+      allShapes.load("items/id,items/type");
+      await context.sync();
+
+      for (const shape of allShapes.items) {
+        if (sel.items.some((s) => s.id === shape.id)) {
+          await applyFontStyleToShape(context, shape, fontDef);
+        }
+      }
+      await context.sync();
+      setStatus(`글자스타일 적용 : ${fontDef.name} (${fontDef.fontName}, ${fontDef.color})`, "success");
+    });
+  } catch (err) {
+    handleApiError(err);
+  }
+}
+
+async function applyFontStyleToShape(context: any, shape: any, fontDef: any) {
+  const t = shape.type;
+  if (t === "Group") {
+    try {
+      const inner = shape.group.shapes;
+      inner.load("items/id,items/type");
+      await context.sync();
+      for (const s of inner.items) await applyFontStyleToShape(context, s, fontDef);
+    } catch (e) {}
+    return;
+  }
+  if (t === "SmartArt") {
+    try {
+      const nodes = shape.smartArt.nodes;
+      nodes.load("items");
+      await context.sync();
+      for (const node of nodes.items) {
+        const ns = node.shapes;
+        ns.load("items");
+        await context.sync();
+        for (const s of ns.items) await applyFontToTextRange(s, fontDef);
+      }
+    } catch (e) {}
+    return;
+  }
+  await applyFontToTextRange(shape, fontDef);
+}
+
+async function applyFontToTextRange(shape: any, fontDef: any) {
+  try {
+    const font = shape.textFrame.textRange.font;
+    font.name = fontDef.fontName;
+    font.color = fontDef.color;
+    font.bold = fontDef.bold;
+    font.italic = fontDef.italic;
+  } catch (e) {}
+}
+
+/* ===================================================
+   색상 적용 (내부 함수 — 클립보드 복사 없음)
+   =================================================== */
+async function applyColorToSelection(applyType: string, hex: string) {
+  try {
+    await PowerPoint.run(async (context) => {
+      const sel = context.presentation.getSelectedShapes();
+      sel.load("items/id");
+      await context.sync();
+      if (sel.items.length === 0) {
+        setStatus("선택된 객체가 없습니다.", "error");
+        return;
+      }
+
+      const slide = context.presentation.getSelectedSlides().getItemAt(0);
+      const allShapes = slide.shapes;
+      allShapes.load("items/id,items/type");
+      await context.sync();
+
+      for (const shape of allShapes.items) {
+        if (sel.items.some((s) => s.id === shape.id)) {
+          await applyColorToShape(context, shape, applyType, hex);
+        }
+      }
+      await context.sync();
+      const typeLabel: Record<string, string> = { fill: "채우기", line: "선색" };
+      setStatus(
+        hex === "NONE" ? `${typeLabel[applyType]} 없음 적용` : `${typeLabel[applyType]} 적용 : ${hex}`,
+        "success",
+      );
+    });
+  } catch (err) {
+    handleApiError(err);
+  }
+}
+
+async function applyColorToShape(context: any, shape: any, applyType: string, hex: string) {
+  const t = shape.type;
+  if (t === "Group") {
+    try {
+      const inner = shape.group.shapes;
+      inner.load("items/id,items/type");
+      await context.sync();
+      for (const s of inner.items) await applyColorToShape(context, s, applyType, hex);
+    } catch (e) {}
+    return;
+  }
+  if (t === "SmartArt") {
+    try {
+      const nodes = shape.smartArt.nodes;
+      nodes.load("items");
+      await context.sync();
+      for (const node of nodes.items) {
+        const ns = node.shapes;
+        ns.load("items");
+        await context.sync();
+        for (const s of ns.items) {
+          if (applyType === "fill") s.fill.setSolidColor(hex);
+          else if (applyType === "line") {
+            s.lineFormat.color = hex;
+            s.lineFormat.visible = true;
+          }
+        }
+      }
+    } catch (e) {}
+    return;
+  }
+  try {
+    if (applyType === "fill") {
+      if (t !== "Picture") {
+        if (hex === "NONE") shape.fill.clear();
+        else shape.fill.setSolidColor(hex);
+      }
+    } else if (applyType === "line") {
+      if (hex === "NONE") {
+        shape.lineFormat.visible = false;
+      } else {
+        shape.lineFormat.color = hex;
+        shape.lineFormat.visible = true;
+        if (shape.lineFormat.weight <= 0) shape.lineFormat.weight = 1.0;
+      }
+    }
+  } catch (e) {}
+}
+
+/* ===================================================
+   이벤트 핸들러 — 선 두께
+   =================================================== */
+async function handleWeightClick(pt: number) {
+  try {
+    await PowerPoint.run(async (context) => {
+      const sel = context.presentation.getSelectedShapes();
+      sel.load("items/id");
+      await context.sync();
+      if (sel.items.length === 0) {
+        setStatus("선택된 객체가 없습니다.", "error");
+        return;
+      }
+
+      const slide = context.presentation.getSelectedSlides().getItemAt(0);
+      const allShapes = slide.shapes;
+      allShapes.load("items/id,items/type");
+      await context.sync();
+
+      for (const shape of allShapes.items) {
+        if (sel.items.some((s) => s.id === shape.id)) {
+          await applyWeightToShape(context, shape, pt);
+        }
+      }
+      await context.sync();
+      setStatus(`선 두께 ${pt}pt 적용`, "success");
+    });
+  } catch (err) {
+    handleApiError(err);
+  }
+}
+
+async function applyWeightToShape(context: any, shape: any, pt: number) {
+  if (shape.type === "Group") {
+    try {
+      const inner = shape.group.shapes;
+      inner.load("items/id,items/type");
+      await context.sync();
+      for (const s of inner.items) await applyWeightToShape(context, s, pt);
+    } catch (e) {}
+    return;
+  }
+  if (shape.type === "SmartArt") {
+    try {
+      const nodes = shape.smartArt.nodes;
+      nodes.load("items");
+      await context.sync();
+      for (const node of nodes.items) {
+        const ns = node.shapes;
+        ns.load("items");
+        await context.sync();
+        for (const s of ns.items) {
+          s.lineFormat.weight = pt;
+          s.lineFormat.visible = true;
+        }
+      }
+    } catch (e) {}
+    return;
+  }
+  try {
+    shape.lineFormat.weight = pt;
+    shape.lineFormat.visible = true;
+  } catch (e) {}
+}
+
+/* ===================================================
+   이벤트 핸들러 — 선 스타일
+   =================================================== */
+async function handleLineStyleClick(styleType: string) {
+  try {
+    await PowerPoint.run(async (context) => {
+      const sel = context.presentation.getSelectedShapes();
+      sel.load("items/id");
+      await context.sync();
+      if (sel.items.length === 0) {
+        setStatus("선택된 객체가 없습니다.", "error");
+        return;
+      }
+
+      const slide = context.presentation.getSelectedSlides().getItemAt(0);
+      const allShapes = slide.shapes;
+      allShapes.load("items/id,items/type");
+      await context.sync();
+
+      for (const shape of allShapes.items) {
+        if (sel.items.some((s) => s.id === shape.id)) {
+          await applyLineStyleToShape(context, shape, styleType);
+        }
+      }
+      await context.sync();
+      setStatus(`선 스타일 변경 : ${styleType === "solid" ? "직선" : "둥근점선"}`, "success");
+    });
+  } catch (err) {
+    handleApiError(err);
+  }
+}
+
+async function applyLineStyleToShape(context: any, shape: any, styleType: string) {
+  if (shape.type === "Group") {
+    try {
+      const inner = shape.group.shapes;
+      inner.load("items/id,items/type");
+      await context.sync();
+      for (const s of inner.items) await applyLineStyleToShape(context, s, styleType);
+    } catch (e) {}
+    return;
+  }
+  try {
+    const lf = shape.lineFormat;
+    lf.visible = true;
+    lf.dashStyle = styleType === "solid" ? PowerPoint.ShapeLineDashStyle.solid : PowerPoint.ShapeLineDashStyle.roundDot;
+  } catch (e) {}
+}
+
+/* ===================================================
+   이벤트 핸들러 — 사이즈 올림 + 위치 스냅
+   =================================================== */
+async function applyRoundedSizeToSelection() {
+  try {
+    await PowerPoint.run(async (context) => {
+      const sel = context.presentation.getSelectedShapes();
+      sel.load("items/id");
+      await context.sync();
+      if (sel.items.length === 0) {
+        setStatus("선택된 객체가 없습니다.", "error");
+        return;
+      }
+
+      const slide = context.presentation.getSelectedSlides().getItemAt(0);
+      const allShapes = slide.shapes;
+      allShapes.load("items/id,items/left,items/top,items/width,items/height");
+      await context.sync();
+
+      const EPT: number = 12700;
+      const EPC: number = 360000;
+
+      const stepEmu: number = Math.round(currentStepCm * EPC);
+      const slideWEmu: number = Math.round(SLIDE.wCm * EPC);
+      const slideHEmu: number = Math.round(SLIDE.hCm * EPC);
+      const centerXEmu: number = Math.floor(slideWEmu / 2);
+      const centerYEmu: number = Math.floor(slideHEmu / 2);
+      const baselineXEmu: number = centerXEmu % stepEmu;
+      const baselineYEmu: number = centerYEmu % stepEmu;
+
+      const stepPt: number = currentStepCm * CM_TO_PT;
+      const selIds: Set<string> = new Set(sel.items.map((s: any) => s.id));
+
+      interface ShapeData {
+        id: string;
+        left: number;
+        top: number;
+        width: number;
+        height: number;
+      }
+      const dataMap: Map<string, ShapeData> = new Map();
+      for (const sh of allShapes.items) {
+        if (!selIds.has(sh.id)) continue;
+        dataMap.set(sh.id, { id: sh.id, left: sh.left, top: sh.top, width: sh.width, height: sh.height });
+      }
+
+      let count: number = 0;
+      let debugMsg: string = "";
+      for (const sh of allShapes.items) {
+        const d = dataMap.get(sh.id);
+        if (!d) continue;
+        try {
+          sh.width = ceilToStep(d.width, stepPt);
+          sh.height = ceilToStep(d.height, stepPt);
+
+          const leftEmu: number = Math.round(d.left * EPT);
+          const topEmu: number = Math.round(d.top * EPT);
+          const snappedL: number = Math.round((leftEmu - baselineXEmu) / stepEmu) * stepEmu + baselineXEmu;
+          const snappedT: number = Math.round((topEmu - baselineYEmu) / stepEmu) * stepEmu + baselineYEmu;
+          sh.left = snappedL / EPT;
+          sh.top = snappedT / EPT;
+
+          if (count === 0) {
+            debugMsg =
+              `원본(${(d.left / CM_TO_PT).toFixed(2)},${(d.top / CM_TO_PT).toFixed(2)})cm` +
+              ` → 스냅(${(sh.left / CM_TO_PT).toFixed(2)},${(sh.top / CM_TO_PT).toFixed(2)})cm`;
+          }
+          count++;
+        } catch (e) {}
+      }
+      await context.sync();
+
+      const bxCm = (baselineXEmu / EPC).toFixed(3);
+      const byCm = (baselineYEmu / EPC).toFixed(3);
+      setStatus(
+        `${count}개 도형 [${SLIDE.name}] 크기올림·위치스냅 (기준 X:${bxCm} Y:${byCm}cm) | ${debugMsg}`,
+        "success",
+        6000,
+      );
+    });
+  } catch (err) {
+    handleApiError(err);
+  }
+}
+
+function ceilToStep(value: number, step: number): number {
+  const ratio = value / step;
+  const ceiled =
+    Math.abs(ratio - Math.round(ratio)) < 1e-1 ? Math.round(ratio) : Math.ceil(parseFloat(ratio.toFixed(9)));
+  return ceiled * step;
+}
+
+/* ===================================================
+   스타일 주입
+   =================================================== */
+function injectStyles() {
+  if (document.getElementById("palette-style")) return;
+  const style = document.createElement("style");
+  style.id = "palette-style";
+  style.textContent = `
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100%; height: 100%;
+      font-family: 'Segoe UI', 'Malgun Gothic', sans-serif;
+      font-size: 12px; background: #f5f5f5; color: #222; overflow-x: hidden;
+    }
+    #app { display: flex; flex-direction: column; padding-bottom: 36px; }
+    .palette-section { background: #fff; border-bottom: 1px solid #e0e0e0; padding: 8px; }
+
+    .section-title {
+      display: flex; align-items: center; gap: 5px;
+      font-size: 11px; font-weight: 600; color: #444;
+      margin-bottom: 7px; user-select: none;
+    }
+    .section-icon {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 14px; height: 14px; font-size: 9px;
+      color: #215F9A; border: 1px solid #215F9A; border-radius: 2px; flex-shrink: 0;
+    }
+    .icon-fill  { background: #215F9A; }
+    .icon-line  { position: relative; }
+    .icon-line::after { content:''; position:absolute; inset:2px; border:1px solid #215F9A; }
+    .icon-font  { font-weight: 700; font-size: 10px; }
+    .icon-size  { font-size: 9px; }
+
+    .color-grid { display: flex; flex-wrap: wrap; gap: 1px; }
+    .color-item {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 2px; padding: 2px; border-radius: 2px;
+    }
+    .color-chip {
+      width: 24px; height: 24px; border: 1px solid #b0b0b0; border-radius: 2px;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .color-chip:hover { transform: scale(1.15); box-shadow: 0 1px 4px rgba(0,0,0,0.25); }
+    .color-chip:active { transform: scale(1.05); opacity: 0.8; }
+    .color-hex {
+      font-size: 6px; color: #666; pointer-events: none; user-select: none;
+    }
+    /* 텍스트(hex)는 클릭 가능 — pointer-events 활성화 + 커서 변경 */
+    .color-hex-copyable {
+      pointer-events: auto;
+      cursor: copy;
+      user-select: none;
+      border-radius: 1px;
+      padding: 1px 0;
+      transition: color 0.1s, background 0.1s;
+    }
+    .color-hex-copyable:hover { color: #215F9A; text-decoration: underline; }
+    .color-hex-copyable:active { color: #174a7a; }
+    .chip-none { background: #fff; position: relative; cursor: pointer; }
+    .chip-none::before, .chip-none::after {
+      content:""; position:absolute; top:50%; left:0; width:100%; height:1px; background:#e00;
+    }
+    .chip-none::before { transform: rotate(45deg); }
+    .chip-none::after  { transform: rotate(-45deg); }
+
+    .weight-row { display: flex; align-items: center; gap: 4px; margin-top: 7px; flex-wrap: wrap; }
+    .weight-label { font-size: 10px; font-weight: 600; color: #666; min-width: 30px; user-select: none; }
+    .weight-btn {
+      width: 34px; height: 24px;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 9px; font-weight: 600; font-family: inherit;
+      color: #215F9A; background: #fff;
+      border: 1px solid #215F9A; border-radius: 2px; cursor: pointer; padding: 0;
+      transition: background .12s, color .12s;
+    }
+    .weight-btn:hover  { background: #215F9A; color: #fff; }
+    .weight-btn:active { background: #174a7a; color: #fff; }
+    .line-style-btn {
+      width: 24px; height: 24px;
+      display: inline-flex; align-items: center; justify-content: center;
+      color: #215F9A; background: #fff;
+      border: 1px solid #215F9A; border-radius: 2px; cursor: pointer; padding: 0;
+      flex-shrink: 0; transition: background .12s, color .12s;
+    }
+    .line-style-btn:hover  { background: #215F9A; color: #fff; }
+    .line-style-btn:active { background: #174a7a; color: #fff; }
+    .line-style-btn svg { pointer-events: none; }
+
+    /* ── 글자스타일 그리드: 48×48 카드, 가로 줄바꿈 ── */
+    .font-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 3px;
+    }
+    .font-style-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      padding: 2px 1px;
+      border: 1px solid #d0d0d0;
+      border-radius: 3px;
+      cursor: pointer;
+      overflow: hidden;
+      flex-shrink: 0;
+      gap: 1px;
+      transition: border-color .12s, opacity .12s;
+    }
+    .font-style-btn:hover  { border-color: #215F9A; opacity: 0.82; }
+    .font-style-btn:active { opacity: 0.65; }
+
+    .font-btn-fontname {
+      font-size: 6px;
+      font-family: 'Segoe UI', 'Malgun Gothic', sans-serif;
+      font-weight: 400;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 44px;
+      pointer-events: none;
+      user-select: none;
+      line-height: 1.1;
+      text-align: center;
+    }
+    .font-btn-sample {
+      font-size: 14px;
+      white-space: nowrap;
+      overflow: hidden;
+      pointer-events: none;
+      user-select: none;
+      line-height: 1.2;
+      max-width: 46px;
+      text-align: center;
+    }
+    .font-btn-name {
+      font-size: 6px;
+      font-family: 'Segoe UI', 'Malgun Gothic', sans-serif;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 44px;
+      pointer-events: none;
+      user-select: none;
+      line-height: 1.1;
+      text-align: center;
+    }
+
+    .size-panel { display: flex; flex-direction: column; gap: 6px; }
+    .size-step-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .size-step-label { font-size: 10px; font-weight: 600; color: #666; user-select: none; flex-shrink: 0; }
+    .size-step-btn {
+      height: 24px; padding: 0 10px;
+      font-size: 10px; font-weight: 600; font-family: inherit;
+      color: #666; background: #fff;
+      border: 1px solid #ccc; border-radius: 2px; cursor: pointer;
+      display: inline-flex; align-items: center;
+      transition: border-color .1s, color .1s, background .1s;
+    }
+    .size-step-btn:hover  { border-color: #215F9A; color: #215F9A; }
+    .size-step-btn.active { border-color: #215F9A; color: #215F9A; background: #e8f0f8; }
+    .size-apply-inline-btn {
+      height: 24px; padding: 0 10px;
+      font-size: 10px; font-weight: 700; font-family: inherit;
+      color: #fff; background: #215F9A;
+      border: none; border-radius: 2px; cursor: pointer;
+      display: inline-flex; align-items: center;
+      white-space: nowrap; transition: background .12s;
+      margin-left: auto;
+    }
+    .size-apply-inline-btn:hover  { background: #174a7a; }
+    .size-apply-inline-btn:active { background: #0e3260; }
+
+    #status-bar {
+      position: fixed; bottom: 0; left: 0; right: 0; height: 28px;
+      background: #1e1e1e; color: #d4d4d4; font-size: 10px;
+      display: flex; align-items: center; padding: 0 10px;
+      z-index: 100; border-top: 1px solid #333;
+    }
+    #status-bar.status-success #status-message { color: #6dbf67; }
+    #status-bar.status-error   #status-message { color: #f47a7a; }
+    #status-bar.status-info    #status-message { color: #79c0ff; }
+  `;
+  document.head.appendChild(style);
+}
+
+/* ===================================================
+   유틸리티
+   =================================================== */
+function copyToClipboard(hex: string) {
+  if (navigator.clipboard) {
+    navigator.clipboard
+      .writeText(hex)
+      .then(() => {
+        setStatus(`${hex} 복사됨`, "info");
+      })
+      .catch(() => {});
+  }
+}
+
+function setStatus(message: string, type = "info", duration = 3500) {
+  const bar = document.getElementById("status-bar");
+  const msg = document.getElementById("status-message");
+  if (!bar || !msg) return;
+  if (statusTimer) clearTimeout(statusTimer);
+  bar.className = type ? `status-${type}` : "";
+  msg.textContent = message;
+  if (duration > 0) {
+    statusTimer = setTimeout(() => {
+      bar.className = "";
+      msg.textContent = "객체를 선택하면 스타일이 즉시 적용됩니다.";
+    }, duration);
+  }
+}
+
+function handleApiError(err: any) {
+  setStatus(err?.message || "오류 발생", "error", 5000);
+  console.error(err);
+}
