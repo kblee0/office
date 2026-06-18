@@ -1,0 +1,69 @@
+<customUI xmlns="http://schemas.microsoft.com/office/2009/07/customui">
+  <ribbon>
+    <tabs>
+      <tab id="customTab" label="스타일">
+        <!-- 그룹1: 채우기 -->
+        <group id="groupFill" label="채우기" imageMso="FillColorPicker">
+            <button id="C2F2F2F" image="C2F2F2F" label="라이트 그레이"/>
+            <button id="CE6B4CF" image="CE6B4CF" label="오렌지"/>
+            <button id="CED1C6F" image="CED1C6F" label="크림"/>
+            <button id="C959595" image="C959595" label="다크 핑크"/>
+            <button id="C40B79B" image="C40B79B" label="파란색"/>
+            <button id="C27AE60" image="C27AE60" label="초록색"/>
+            <button id="CF39C12" image="CF39C12" label="주황색"/>
+            <button id="C16A085" image="C16A085" label="다크 민트"/>
+            <button id="C8E44AD" image="C8E44AD" label="라임 그린"/>
+            <button id="C3498DB" image="C3498DB" label="라이트 블루"/>
+            <button id="CE74C3C" image="CE74C3C" label="빨간색"/>
+            <button id="C000000" image="C000000" label="검은색"/>
+        </group>
+
+        <!-- 그룹2: 선색 -->
+        <group id="groupLineColor" label="선색" imageMso="LineColor">
+            <button id="L2F2F2F" image="C2F2F2F" label="라이트 그레이"/>
+            <button id="LE6B4CF" image="CE6B4CF" label="오렌지"/>
+            <button id="LED1C6F" image="CED1C6F" label="크림"/>
+            <button id="L959595" image="C959595" label="다크 핑크"/>
+            <button id="L40B79B" image="C40B79B" label="파란색"/>
+            <button id="L27AE60" image="C27AE60" label="초록색"/>
+            <button id="LF39C12" image="CF39C12" label="주황색"/>
+            <button id="L16A085" image="C16A085" label="다크 민트"/>
+            <button id="L8E44AD" image="C8E44AD" label="라임 그린"/>
+            <button id="L3498DB" image="C3498DB" label="라이트 블루"/>
+            <button id="LE74C3C" image="CE74C3C" label="빨간색"/>
+            <button id="L000000" image="C000000" label="검은색"/>
+        </group>
+
+        <!-- 그룹3: 사각형도구 -->
+        <group id="groupRectTools" label="사각형도구">
+          <button id="btnRect" label="직사각형" imageMso="Rectangle" onAction="OnRectangleShape"/>
+          <button id="btnRoundRect01" label="0.1cm 둥근" imageMso="RoundedRectangle" onAction="OnRoundedRectangle01"/>
+          <button id="btnRoundRect02" label="0.2cm 둥근" imageMso="RoundedRectangle" onAction="OnRoundedRectangle02"/>
+          <button id="btnTopRoundRect01" label="위쪽 0.1cm" imageMso="RoundedRectangle" onAction="OnTopRoundedRectangle01"/>
+          <button id="btnTopRoundRect02" label="위쪽 0.2cm" imageMso="RoundedRectangle" onAction="OnTopRoundedRectangle02"/>
+          <button id="btnBottomRoundRect01" label="아래쪽 0.1cm" imageMso="RoundedRectangle" onAction="OnBottomRoundedRectangle01"/>
+          <button id="btnBottomRoundRect02" label="아래쪽 0.2cm" imageMso="RoundedRectangle" onAction="OnBottomRoundedRectangle02"/>
+        </group>
+
+        <!-- 그룹4: 표 도구 -->
+        <group id="groupTableTools" label="표 도구">
+          <button id="btnTableBorder05" label="0.5pt 모든 테두리" onAction="OnTableBorder05"/>
+          <button id="btnTableBorder10" label="1.0pt 모든 테두리" onAction="OnTableBorder10"/>
+          <button id="btnTableBorder15" label="1.5pt 모든 테두리" onAction="OnTableBorder15"/>
+          <button id="btnTableBorder05NoLR" label="0.5pt 좌우 제외" onAction="OnTableBorder05NoLR"/>
+          <button id="btnTableBorder10NoLR" label="1.0pt 좌우 제외" onAction="OnTableBorder10NoLR"/>
+          <button id="btnTableBorder15NoLR" label="1.5pt 좌우 제외" onAction="OnTableBorder15NoLR"/>
+        </group>
+
+        <!-- 그룹5: 폰트 도구 -->
+        <group id="groupFontTools" label="폰트 도구">
+          <button id="btnFont1" label="본고딕-000000-B" tag="본고딕,000000,true" onAction="OnFontChange"/>
+          <button id="btnFont2" label="맑은고딕-3498DB" tag="맑은고딕,3498DB,false" onAction="OnFontChange"/>
+          <button id="btnFont3" label="한컴산체-E74C3C-B" tag="한컴산체,E74C3C,true" onAction="OnFontChange"/>
+          <button id="btnFont4" label="궁서-40B79B-B" tag="궁서,40B79B,true" onAction="OnFontChange"/>
+          <button id="btnFont5" label="돋움-27AE60" tag="돋움,27AE60,false" onAction="OnFontChange"/>
+        </group>
+      </tab>
+    </tabs>
+  </ribbon>
+</customUI>
