@@ -1,68 +1,107 @@
 <customUI xmlns="http://schemas.microsoft.com/office/2009/07/customui">
   <ribbon>
     <tabs>
-      <tab id="customTab" label="스타일">
-        <!-- 그룹1: 채우기 -->
-        <group id="groupFill" label="채우기" imageMso="FillColorPicker">
-            <button id="C2F2F2F" image="C2F2F2F" label="T01"/>
-            <button id="CE6B4CF" image="CE6B4CF" label="T02"/>
-            <button id="CED1C6F" image="CED1C6F" label="T03"/>
-            <button id="C959595" image="C959595" label="T04"/>
-            <button id="C40B79B" image="C40B79B" label="S01"/>
-            <button id="C27AE60" image="C27AE60" label="S02"/>
-            <button id="CF39C12" image="CF39C12" label="S03"/>
-            <button id="C16A085" image="C16A085" label="S04"/>
-            <button id="C8E44AD" image="C8E44AD" label="S05"/>
-            <button id="C3498DB" image="C3498DB" label="S06"/>
-            <button id="CE74C3C" image="CE74C3C" label="S07"/>
-            <button id="C000000" image="C000000" label="S08"/>
-        </group>
-
-        <!-- 그룹2: 선색 -->
-        <group id="groupLineColor" label="선색" imageMso="LineColor">
-            <button id="L2F2F2F" image="C2F2F2F" label="T01"/>
-            <button id="LE6B4CF" image="CE6B4CF" label="T02"/>
-            <button id="LED1C6F" image="CED1C6F" label="T03"/>
-            <button id="L959595" image="C959595" label="T04"/>
-            <button id="L40B79B" image="C40B79B" label="S01"/>
-            <button id="L27AE60" image="C27AE60" label="S02"/>
-            <button id="LF39C12" image="CF39C12" label="S03"/>
-            <button id="L16A085" image="C16A085" label="S04"/>
-            <button id="L8E44AD" image="C8E44AD" label="S05"/>
-            <button id="L3498DB" image="C3498DB" label="S06"/>
-            <button id="LE74C3C" image="CE74C3C" label="S07"/>
-            <button id="L000000" image="C000000" label="S08"/>
-        </group>
-
-        <!-- 그룹3: 사각형도구 -->
-        <group id="groupRectTools" label="사각형도구">
-          <button id="btnRect" label="직사각형" imageMso="Rectangle" onAction="OnRectangleShape"/>
-          <button id="btnRoundRect01" label="0.1cm 둥근" imageMso="RoundedRectangle" onAction="OnRoundedRectangle01"/>
-          <button id="btnRoundRect02" label="0.2cm 둥근" imageMso="RoundedRectangle" onAction="OnRoundedRectangle02"/>
-          <button id="btnTopRoundRect01" label="위쪽 0.1cm" imageMso="RoundedRectangle" onAction="OnTopRoundedRectangle01"/>
-          <button id="btnTopRoundRect02" label="위쪽 0.2cm" imageMso="RoundedRectangle" onAction="OnTopRoundedRectangle02"/>
-          <button id="btnBottomRoundRect01" label="아래쪽 0.1cm" imageMso="RoundedRectangle" onAction="OnBottomRoundedRectangle01"/>
-          <button id="btnBottomRoundRect02" label="아래쪽 0.2cm" imageMso="RoundedRectangle" onAction="OnBottomRoundedRectangle02"/>
-        </group>
-
-        <group id="groupBorderEtcTools" label="표수정">
-          <button id="btnOnTableBordersLRRemove" label="표좌우테두리제거" onAction="OnTableBordersLRRemove"/>
-        </group>
-
-        <!-- 그룹4: 표 도구 -->
-        <group id="groupBorderTools" label="표 도구">
-          <button id="btnTableBorder05" label="테두리 0.5pt" onAction="OnBorder05"/>
-          <button id="btnTableBorder10" label="테두리 1.0pt" onAction="OnBorder10"/>
-          <button id="btnTableBorder15" label="테두리 1.5pt" onAction="OnBorder15"/>
-        </group>
-        
-        <!-- 그룹5: 폰트 도구 -->
+      <tab id="customTab" label="스타일" insertAfterMso="TabHome">
         <group id="groupFontTools" label="폰트 도구">
-          <button id="btnFont1" label="본고딕-000000-B" tag="본고딕,000000,true" onAction="OnFontChange"/>
-          <button id="btnFont2" label="맑은고딕-3498DB" tag="맑은고딕,3498DB,false" onAction="OnFontChange"/>
-          <button id="btnFont3" label="한컴산체-E74C3C-B" tag="한컴산체,E74C3C,true" onAction="OnFontChange"/>
-          <button id="btnFont4" label="궁서-40B79B-B" tag="궁서,40B79B,true" onAction="OnFontChange"/>
-          <button id="btnFont5" label="돋움-27AE60" tag="돋움,27AE60,false" onAction="OnFontChange"/>
+          <button id="btnFont1" label="본고딕-000000-B" tag="본고딕,000000,true" onAction="OnFontChange" />
+          <button id="btnFont2" label="맑은고딕-3498DB" tag="맑은고딕,3498DB,false" onAction="OnFontChange" />
+          <button id="btnFont3" label="한컴산체-E74C3C-B" tag="한컴산체,E74C3C,true" onAction="OnFontChange" />
+          <button id="btnFont4" label="궁서-40B79B-B" tag="궁서,40B79B,true" onAction="OnFontChange" />
+          <button id="btnFont5" label="돋움-27AE60" tag="돋움,27AE60,false" onAction="OnFontChange" />
+        </group>
+        <group id="groupFill" label="채우기색" imageMso="FillColorPicker">
+          <buttonGroup id="buttongroupFill1">
+            <button id="C2F2F2F" image="C2F2F2F" label="T01" onAction="OnFillColorClick" />
+            <button id="CE6B4CF" image="CE6B4CF" label="T02" onAction="OnFillColorClick" />
+            <button id="CED1C6F" image="CED1C6F" label="T03" onAction="OnFillColorClick" />
+            <button id="C959595" image="C959595" label="T04" onAction="OnFillColorClick" />
+          </buttonGroup>
+          <buttonGroup id="buttongroupFill2">
+            <button id="C40B79B" image="C40B79B" label="S01" onAction="OnFillColorClick" />
+            <button id="C27AE60" image="C27AE60" label="S02" onAction="OnFillColorClick" />
+            <button id="CF39C12" image="CF39C12" label="S03" onAction="OnFillColorClick" />
+            <button id="C16A085" image="C16A085" label="S04" onAction="OnFillColorClick" />
+          </buttonGroup>
+          <buttonGroup id="buttongroupFill3">
+            <button id="C8E44AD" image="C8E44AD" label="S05" onAction="OnFillColorClick" />
+            <button id="C3498DB" image="C3498DB" label="S06" onAction="OnFillColorClick" />
+            <button id="CE74C3C" image="CE74C3C" label="S07" onAction="OnFillColorClick" />
+            <button id="C000000" image="C000000" label="S08" onAction="OnFillColorClick" />
+          </buttonGroup>
+          <button id="CNONE" image="CNONE" label="없음" onAction="OnFillColorClick" />
+        </group>
+        <group id="groupLineColor" label="윤곽선색" imageMso="LineColor">
+          <buttonGroup id="buttongroupLine1">
+            <button id="L2F2F2F" image="C2F2F2F" label="T01" onAction="OnLineColorClick" />
+            <button id="LE6B4CF" image="CE6B4CF" label="T02" onAction="OnLineColorClick" />
+            <button id="LED1C6F" image="CED1C6F" label="T03" onAction="OnLineColorClick" />
+            <button id="L959595" image="C959595" label="T04" onAction="OnLineColorClick" />
+          </buttonGroup>
+          <buttonGroup id="buttongroupLine2">
+            <button id="L40B79B" image="C40B79B" label="S01" onAction="OnLineColorClick" />
+            <button id="L27AE60" image="C27AE60" label="S02" onAction="OnLineColorClick" />
+            <button id="LF39C12" image="CF39C12" label="S03" onAction="OnLineColorClick" />
+            <button id="L16A085" image="C16A085" label="S04" onAction="OnLineColorClick" />
+          </buttonGroup>
+          <buttonGroup id="buttongroupLine3">
+            <button id="L8E44AD" image="C8E44AD" label="S05" onAction="OnLineColorClick" />
+            <button id="L3498DB" image="C3498DB" label="S06" onAction="OnLineColorClick" />
+            <button id="LE74C3C" image="CE74C3C" label="S07" onAction="OnLineColorClick" />
+            <button id="L000000" image="C000000" label="S08" onAction="OnLineColorClick" />
+          </buttonGroup>
+          <button id="LNONE" image="CNONE" label="없음" onAction="OnLineColorClick" />
+        </group>
+        <group id="groupBorderEtcTools" label="도구">
+          <gallery id="myGallery" label="색복사" image="color_copy" columns="4" rows="4"
+            onAction="OnCopyHexColor">
+            <item id="M2F2F2F" image="C2F2F2F" label="T01" />
+            <item id="ME6B4CF" image="CE6B4CF" label="T02" />
+            <item id="MED1C6F" image="CED1C6F" label="T03" />
+            <item id="M959595" image="C959595" label="T04" />
+            <item id="M40B79B" image="C40B79B" label="S01" />
+            <item id="M27AE60" image="C27AE60" label="S02" />
+            <item id="MF39C12" image="CF39C12" label="S03" />
+            <item id="M16A085" image="C16A085" label="S04" />
+            <item id="M8E44AD" image="C8E44AD" label="S05" />
+            <item id="M3498DB" image="C3498DB" label="S06" />
+            <item id="ME74C3C" image="CE74C3C" label="S07" />
+            <item id="M000000" image="C000000" label="S08" />
+          </gallery>
+          <buttonGroup id="buttongroupDashStyle">
+            <button id="OnLineDashStyle01" image="line_solid" label="직선" tag="1" onAction="OnLineDashStyle" />
+            <button id="OnLineDashStyle11" image="line_dot" label="점선" tag="11" onAction="OnLineDashStyle" />
+          </buttonGroup>
+          <button id="btnOnTableBordersLRRemove" image="t_type1" label="좌우테두리제거" onAction="OnTableBordersLRRemove" />
+          <button id="btnTableBorder05" image="rect_05pt" label="0.5pt" tag="0.5" onAction="OnLineWeight" />
+          <button id="btnTableBorder10" image="rect_10pt" label="1.0pt" tag="1.0" onAction="OnLineWeight" />
+          <button id="btnTableBorder15" image="rect_15pt" label="1.5pt" tag="1.5" onAction="OnLineWeight" />
+        </group>
+        <group id="groupRectTools" label="둥근사각형도구 (cm)">
+          <buttonGroup id="buttongroupRec1">
+            <button id="btnOnShapeTypeAdjustments00510" label=".1" image="rect_ar" tag="5,0.1,-1" onAction="OnShapeTypeAdjustments" />
+            <button id="btnOnShapeTypeAdjustments00520" label=".2" image="rect_ar" tag="5,0.2,-1" onAction="OnShapeTypeAdjustments" />
+            <button id="btnOnShapeTypeAdjustments00530" label=".3" image="rect_ar" tag="5,0.3,-1" onAction="OnShapeTypeAdjustments" />
+          </buttonGroup>
+          <buttonGroup id="buttongroupRec2">
+            <button id="btnOnShapeTypeAdjustments15210" label=".1" image="rect_ur" tag="152,0.1,0" onAction="OnShapeTypeAdjustments" />
+            <button id="btnOnShapeTypeAdjustments15220" label=".2" image="rect_ur" tag="152,0.2,0" onAction="OnShapeTypeAdjustments" />
+            <button id="btnOnShapeTypeAdjustments15230" label=".3" image="rect_ur" tag="152,0.3,0" onAction="OnShapeTypeAdjustments" />
+          </buttonGroup>
+          <buttonGroup id="buttongroupRec3">
+            <button id="btnOnShapeTypeAdjustments15201" label=".1" image="rect_dr" tag="152,0,0.1" onAction="OnShapeTypeAdjustments" />
+            <button id="btnOnShapeTypeAdjustments15202" label=".2" image="rect_dr" tag="152,0,0.2" onAction="OnShapeTypeAdjustments" />
+            <button id="btnOnShapeTypeAdjustments15203" label=".3" image="rect_dr" tag="152,0,0.3" onAction="OnShapeTypeAdjustments" />
+          </buttonGroup>
+        </group>
+        <group id="groupSizeLocTools" label="크기/위치">
+          <buttonGroup id="buttongroup1">
+            <button id="btnOnhapeSizeNormalize1" imageMso="SizeToFit" tag="0.1" label="x.1" onAction="OnhapeSizeNormalize" />
+            <button id="btnOnhapeSizeNormalize2" imageMso="SizeToFit" tag="0.2" label="x.2" onAction="OnhapeSizeNormalize" />
+          </buttonGroup>
+          <buttonGroup id="buttongroup2">
+            <button id="btnOnShapeLocNormalize1" imageMso="SnapToGrid" tag="0.1" label=".1" onAction="OnShapeLocNormalize" />
+            <button id="btnOnShapeLocNormalize2" imageMso="SnapToGrid" tag="0.2" label=".2" onAction="OnShapeLocNormalize" />
+          </buttonGroup>
         </group>
       </tab>
     </tabs>
