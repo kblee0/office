@@ -1,16 +1,16 @@
 for %%C in (
-2F2F2F
-E6B4CF
-ED1C6F
-959595
-40B79B
-27AE60
-F39C12
-16A085
-8E44AD
-3498DB
-E74C3C
-000000
+FFFFFF
+EAEAEA
+A6A6A6
+5A626A
+2B3A4A
+231815
+FCE6E6
+E60012
+850107
+4A90E2
+3B7A57
+E09924
 ) do (
     C:\home\local\ImageMagick\magick -size 32x32 canvas:none ^
       -fill "#%%C" ^
