@@ -1,3 +1,5 @@
+del color\*.png
+
 for %%C in (
 FFFFFF
 EAEAEA
@@ -12,10 +14,15 @@ E60012
 3B7A57
 E09924
 ) do (
-    C:\home\local\ImageMagick\magick -size 32x32 canvas:none ^
-      -fill "#%%C" ^
-      -stroke white ^
-      -strokewidth 2 ^
-      -draw "roundrectangle 2,2 30,30 3,3" ^
-      "color\C%%C.png"
+C:\home\local\ImageMagick\magick ^
+  -size 32x32 canvas:none ^
+  -fill white ^
+  -draw "roundrectangle 0,0 31,31 3,3" ^
+  -fill "#808080" ^
+  -draw "roundrectangle 2,2 29,29 1,1" ^
+  -fill "#%%C" ^
+  -draw "rectangle 4,4 27,27" ^
+  "color\C%%C.png"
 )
+
+copy CNONE.png color\
