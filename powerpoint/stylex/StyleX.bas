@@ -4,26 +4,17 @@ Attribute VB_Name = "StyleX"
 ' SPEC: 스타일 도구모음
 '==================================================
 
-'==================================================
-' StyleX RibbonX PowerPoint 매크로
-' SPEC: 스타일 도구모음
-'==================================================
-
 Option Explicit
 
 Const PT_PER_CM As Double = 28.34645652771
 
-Public Function GetItemCount(control As IRibbonControl) As Integer
-    GetItemCount = 12
-End Function
+Public Sub GetButtonImage(control As IRibbonControl, ByRef image)
+    Set image = gConfig.Icon(control.tag)
+End Sub
 
-Public Function GetItemImage(control As IRibbonControl, index As Integer) As IPictureDisp
-    Set GetItemImage = gConfig.Icon("color" & Format(index+1, "00"))
-End Function
-
-Public Function GetButtonImage(control As IRibbonControl) As IPictureDisp
-    Set GetButtonImage = gConfig.Icon(control.Tag)
-End Function
+Public Sub GetButtonLabel(control As IRibbonControl, ByRef color)
+    color = gConfig.Value(control.tag)
+End Sub
 
 Sub OnToggleAction(control As IRibbonControl, pressed As Boolean)
     If control.id = "tglBorderOutside" Then gToggleState.BorderOutside = pressed
@@ -49,17 +40,17 @@ Public Sub OnFillColorClick(control As IRibbonControl)
     
     On Error GoTo ErrorHandler
     
-    If gConfig.Value(control.Tag) = "#NONE" Then
+    If gConfig.Value(control.tag) = "#NONE" Then
         colorRGB = -1
     Else
-        colorHex = Right(gConfig.Value(control.Tag), 6)
+        colorHex = Right(gConfig.Value(control.tag), 6)
         colorRGB = HexToRGB(colorHex)
     End If
     
     ' 선택된 모든 도형에 배경색 적용
     Set shapeRange = ActiveWindow.Selection.shapeRange
     
-    For i = 1 To shapeRange.Count
+    For i = 1 To shapeRange.count
         Set shape = shapeRange(i)
         
         ' 테이블 셀인 경우
@@ -95,8 +86,8 @@ Private Sub ApplyFillColorToTable(tableShape As shape, colorRGB As Long)
     Set table = tableShape.table
     
     ' 모든 셀의 배경색 설정
-    For row = 1 To table.Rows.Count
-        For col = 1 To table.Columns.Count
+    For row = 1 To table.Rows.count
+        For col = 1 To table.Columns.count
             Set cell = table.cell(row, col)
             If cell.Selected Then
                 cell.shape.fill.ForeColor.RGB = colorRGB
@@ -123,17 +114,17 @@ Public Sub OnLineColorClick(control As IRibbonControl)
     On Error GoTo ErrorHandler
     
     ' 버튼 ID에서 16진수 추출 (예: L2F2F2F -> 2F2F2F)
-    If gConfig.Value(control.Tag) = "#NONE" Then
+    If gConfig.Value(control.tag) = "#NONE" Then
         colorRGB = -1
     Else
-        colorHex = Right(gConfig.Value(control.Tag), 6)
+        colorHex = Right(gConfig.Value(control.tag), 6)
         colorRGB = HexToRGB(colorHex)
     End If
     
     ' 선택된 모든 도형의 테두리선 색상 변경
     Set shapeRange = ActiveWindow.Selection.shapeRange
     
-    For i = 1 To shapeRange.Count
+    For i = 1 To shapeRange.count
         Set shape = shapeRange(i)
         
         ' 테이블 셀인 경우
@@ -171,8 +162,8 @@ Private Sub ApplyLineColorToTable(tableShape As shape, colorRGB As Long)
     maxCol = 0
     
     If gToggleState.BorderOutside Then
-        For row = 1 To table.Rows.Count
-            For col = 1 To table.Columns.Count
+        For row = 1 To table.Rows.count
+            For col = 1 To table.Columns.count
                 Set cell = table.cell(row, col)
                 If cell.Selected Then
                     If row < minRow Then minRow = row
@@ -185,8 +176,8 @@ Private Sub ApplyLineColorToTable(tableShape As shape, colorRGB As Long)
     End If
     
     ' 모든 셀의 테두리 색상 설정
-    For row = 1 To table.Rows.Count
-        For col = 1 To table.Columns.Count
+    For row = 1 To table.Rows.count
+        For col = 1 To table.Columns.count
             Set cell = table.cell(row, col)
             
             If cell.Selected Then
@@ -239,7 +230,7 @@ Private Sub ApplyShapeTypeAdjustments(shapeType As MsoAutoShapeType, Adjustment1
     
     Set shapeRange = ActiveWindow.Selection.shapeRange
     
-    For i = shapeRange.Count To 1 Step -1
+    For i = shapeRange.count To 1 Step -1
         Set shape = shapeRange(i)
         
         shape.AutoShapeType = shapeType
@@ -269,7 +260,7 @@ Private Sub ApplyLineWeight(ByVal lineWeight As Double)
     
     Set shapeRange = ActiveWindow.Selection.shapeRange
     
-    For i = 1 To shapeRange.Count
+    For i = 1 To shapeRange.count
         Set shape = shapeRange(i)
         
         ' 테이블 셀인 경우
@@ -304,8 +295,8 @@ Private Sub ApplyLineWeightToTable(tableShape As shape, ByVal weight As Single)
     maxCol = 0
     
     If gToggleState.BorderOutside Then
-        For row = 1 To table.Rows.Count
-            For col = 1 To table.Columns.Count
+        For row = 1 To table.Rows.count
+            For col = 1 To table.Columns.count
                 Set cell = table.cell(row, col)
                 If cell.Selected Then
                     If row < minRow Then minRow = row
@@ -317,8 +308,8 @@ Private Sub ApplyLineWeightToTable(tableShape As shape, ByVal weight As Single)
         Next row
     End If
     
-    For row = 1 To table.Rows.Count
-        For col = 1 To table.Columns.Count
+    For row = 1 To table.Rows.count
+        For col = 1 To table.Columns.count
             Set cell = table.cell(row, col)
             
             If cell.Selected Then
@@ -345,15 +336,15 @@ Public Sub OnTableBordersLRRemove(control As IRibbonControl)
     
     Set shapeRange = ActiveWindow.Selection.shapeRange
     
-    For i = 1 To shapeRange.Count
+    For i = 1 To shapeRange.count
         Set shape = shapeRange(i)
         If shape.HasTable Then
             Set table = shape.table
-            For row = 1 To table.Rows.Count
+            For row = 1 To table.Rows.count
                 table.cell(row, 1).borders.item(ppBorderLeft).Visible = msoFalse
                 table.cell(row, 1).borders.item(ppBorderLeft).Transparency = 1#
-                table.cell(row, table.Columns.Count).borders.item(ppBorderRight).Visible = msoFalse
-                table.cell(row, table.Columns.Count).borders.item(ppBorderRight).Transparency = 1#
+                table.cell(row, table.Columns.count).borders.item(ppBorderRight).Visible = msoFalse
+                table.cell(row, table.Columns.count).borders.item(ppBorderRight).Transparency = 1#
             Next row
         End If
     Next
@@ -379,7 +370,7 @@ Public Sub OnLineDashStyle(control As IRibbonControl)
     
     Set shapeRange = ActiveWindow.Selection.shapeRange
    
-    For i = 1 To shapeRange.Count
+    For i = 1 To shapeRange.count
         Set shape = shapeRange(i)
         
         ' 테이블 셀인 경우
@@ -414,8 +405,8 @@ Private Sub ApplyLineDashStyleToTable(tableShape As shape, ByVal dashStyle As Ms
     maxCol = 0
     
     If gToggleState.BorderOutside Then
-        For row = 1 To table.Rows.Count
-            For col = 1 To table.Columns.Count
+        For row = 1 To table.Rows.count
+            For col = 1 To table.Columns.count
                 Set cell = table.cell(row, col)
                 If cell.Selected Then
                     If row < minRow Then minRow = row
@@ -427,8 +418,8 @@ Private Sub ApplyLineDashStyleToTable(tableShape As shape, ByVal dashStyle As Ms
         Next row
     End If
 
-    For row = 1 To table.Rows.Count
-        For col = 1 To table.Columns.Count
+    For row = 1 To table.Rows.count
+        For col = 1 To table.Columns.count
             Set cell = table.cell(row, col)
             If cell.Selected Then
                 With cell.borders
@@ -464,8 +455,8 @@ Public Sub OnFontChange(control As IRibbonControl)
     
     On Error GoTo ErrorHandler
     
-    fontName = Trim(gConfig.Value(control.Tag)(0))
-    fontColor = Trim(gConfig.Value(control.Tag)(1))
+    fontName = Trim(gConfig.Value(control.tag)(0))
+    fontColor = Trim(gConfig.Value(control.tag)(1))
     
     colorRGB = HexToRGB(fontColor)
     
@@ -474,25 +465,25 @@ Public Sub OnFontChange(control As IRibbonControl)
         With textRange.Font
             .Name = fontName
             .NameFarEast = fontName
-            .Color.RGB = colorRGB
+            .color.RGB = colorRGB
         End With
     Else
         Set shapeRange = ActiveWindow.Selection.shapeRange
    
-        For i = 1 To shapeRange.Count
+        For i = 1 To shapeRange.count
             Set shape = shapeRange(i)
             
             If shape.HasTable Then
                 Set table = shape.table
-                For row = 1 To table.Rows.Count
-                    For col = 1 To table.Columns.Count
+                For row = 1 To table.Rows.count
+                    For col = 1 To table.Columns.count
                         Set cell = table.cell(row, col)
                         If cell.Selected Then
                             Set textRange = cell.shape.TextFrame.textRange
                             With textRange.Font
                                 .Name = fontName
                                 .NameFarEast = fontName
-                                .Color.RGB = colorRGB
+                                .color.RGB = colorRGB
                             End With
                         End If
                     Next
@@ -502,7 +493,7 @@ Public Sub OnFontChange(control As IRibbonControl)
                 With textRange.Font
                     .Name = fontName
                     .NameFarEast = fontName
-                    .Color.RGB = colorRGB
+                    .color.RGB = colorRGB
                 End With
             End If
         Next
@@ -545,13 +536,13 @@ Public Sub OnParagraphSpace(control As IRibbonControl)
     Else
         Set shapeRange = ActiveWindow.Selection.shapeRange
    
-        For i = 1 To shapeRange.Count
+        For i = 1 To shapeRange.count
             Set shape = shapeRange(i)
             
             If shape.HasTable Then
                 Set table = shape.table
-                For row = 1 To table.Rows.Count
-                    For col = 1 To table.Columns.Count
+                For row = 1 To table.Rows.count
+                    For col = 1 To table.Columns.count
                         Set cell = table.cell(row, col)
                         If cell.Selected Then
                             Set textRange = cell.shape.TextFrame.textRange
@@ -584,9 +575,8 @@ Public Sub OnParagraphSpace(control As IRibbonControl)
 ErrorHandler:
 End Sub
 
-
-Public Sub OnCopyHexColor(control As IRibbonControl, id As String, index As Integer)
-    CreateObject("htmlfile").ParentWindow.ClipboardData.SetData "Text", "#" & Right(id, 6)
+Public Sub OnCopyColor(control As IRibbonControl)
+    CreateObject("htmlfile").ParentWindow.ClipboardData.SetData "Text", gConfig.Value(control.tag)
 End Sub
 
 
@@ -602,7 +592,7 @@ Public Sub OnhapeSizeNormalize(control As IRibbonControl)
 
     Set shapeRange = ActiveWindow.Selection.shapeRange
    
-    For i = 1 To shapeRange.Count
+    For i = 1 To shapeRange.count
         Set shape = shapeRange(i)
         shape.Width = RoundPtToCmMultiple(shape.Width, baseCm)
         shape.Height = RoundPtToCmMultiple(shape.Height, baseCm)
@@ -626,7 +616,7 @@ Public Sub OnShapeLocNormalize(control As IRibbonControl)
 
     Set shapeRange = ActiveWindow.Selection.shapeRange
    
-    For i = 1 To shapeRange.Count
+    For i = 1 To shapeRange.count
         Set shape = shapeRange(i)
         shape.Left = RoundPtToCmMultiple(shape.Left, baseCm, 1)
         shape.Top = RoundPtToCmMultiple(shape.Top, baseCm, 2)
@@ -652,9 +642,9 @@ Private Function HexToRGB(hexColor As String) As Long
     hexColor = Replace(hexColor, "0x", "")
     
     ' RGB 값 추출
-    r = Val("&H" & Mid(hexColor, 1, 2))
-    g = Val("&H" & Mid(hexColor, 3, 2))
-    b = Val("&H" & Mid(hexColor, 5, 2))
+    r = val("&H" & Mid(hexColor, 1, 2))
+    g = val("&H" & Mid(hexColor, 3, 2))
+    b = val("&H" & Mid(hexColor, 5, 2))
     
     ' RGB 값을 Long으로 변환
     HexToRGB = RGB(r, g, b)
@@ -700,5 +690,7 @@ Function RoundPtToCmMultiple(ByVal pt As Double, ByVal cmMultiple As Double, Opt
         RoundPtToCmMultiple = Round(((pt - base) / PT_PER_CM - cmMultiple / 10#) / cmMultiple, 0) * cmMultiple * PT_PER_CM + base
     End If
 End Function
+
+
 
 

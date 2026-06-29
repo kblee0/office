@@ -1,4 +1,4 @@
-<customUI xmlns="http://schemas.microsoft.com/office/2009/07/customui">
+<customUI xmlns="http://schemas.microsoft.com/office/2009/07/customui" onLoad="RibbonOnLoad">
   <ribbon>
     <tabs>
       <tab id="customTab" label="스타일" insertAfterMso="TabHome">
@@ -23,50 +23,59 @@
           <button id="btnPgfS3" imageMso="ParagraphSpacingDecrease" tag="-0.1" onAction="OnParagraphSpace" />
         </group>
         <group id="groupFill" label="채우기색" imageMso="FillColorPicker">
-          <buttonGroup id="buttongroupFill1">
-            <button id="btnFillColor01" label="B1" tag="color01" getImage="GetButtonImage" onAction="OnFillColorClick" />
-            <button id="btnFillColor02" label="B2" tag="color02" getImage="GetButtonImage" onAction="OnFillColorClick" />
-            <button id="btnFillColor03" label="B3" tag="color03" getImage="GetButtonImage" onAction="OnFillColorClick" />
-            <button id="btnFillColor04" label="B4" tag="color04" getImage="GetButtonImage" onAction="OnFillColorClick" />
-          </buttonGroup>
-          <buttonGroup id="buttongroupFill2">
-            <button id="btnFillColor05" label="B5" tag="color05" getImage="GetButtonImage" onAction="OnFillColorClick" />
-            <button id="btnFillColor06" label="C1" tag="color06" getImage="GetButtonImage" onAction="OnFillColorClick" />
-            <button id="btnFillColor07" label="C2" tag="color07" getImage="GetButtonImage" onAction="OnFillColorClick" />
-            <button id="btnFillColor08" label="C3" tag="color08" getImage="GetButtonImage" onAction="OnFillColorClick" />
-          </buttonGroup>
-          <buttonGroup id="buttongroupFill3">
-            <button id="btnFillColor09" label="C4" tag="color09" getImage="GetButtonImage" onAction="OnFillColorClick" />
-            <button id="btnFillColor10" label="C5" tag="color10" getImage="GetButtonImage" onAction="OnFillColorClick" />
-            <button id="btnFillColor11" label="C6" tag="color11" getImage="GetButtonImage" onAction="OnFillColorClick" />
-            <button id="btnFillColor12" label="C7" tag="color12" getImage="GetButtonImage" onAction="OnFillColorClick" />
-          </buttonGroup>
+          <button id="btnFillColor01" label="B1" tag="color01" getImage="GetButtonImage" onAction="OnFillColorClick" />
+          <button id="btnFillColor05" label="B5" tag="color05" getImage="GetButtonImage" onAction="OnFillColorClick" />
+          <button id="btnFillColor09" label="C4" tag="color09" getImage="GetButtonImage" onAction="OnFillColorClick" />
+
+          <button id="btnFillColor02" label="B2" tag="color02" getImage="GetButtonImage" onAction="OnFillColorClick" />
+          <button id="btnFillColor06" label="C1" tag="color06" getImage="GetButtonImage" onAction="OnFillColorClick" />
+          <button id="btnFillColor10" label="C5" tag="color10" getImage="GetButtonImage" onAction="OnFillColorClick" />
+
+          <button id="btnFillColor03" label="B3" tag="color03" getImage="GetButtonImage" onAction="OnFillColorClick" />
+          <button id="btnFillColor07" label="C2" tag="color07" getImage="GetButtonImage" onAction="OnFillColorClick" />
+          <button id="btnFillColor11" label="C6" tag="color11" getImage="GetButtonImage" onAction="OnFillColorClick" />
+
+          <button id="btnFillColor04" label="B4" tag="color04" getImage="GetButtonImage" onAction="OnFillColorClick" />
+          <button id="btnFillColor08" label="C3" tag="color08" getImage="GetButtonImage" onAction="OnFillColorClick" />
+          <button id="btnFillColor12" label="C7" tag="color12" getImage="GetButtonImage" onAction="OnFillColorClick" />
+
           <button id="btnFillColor13" label="없음" showLabel="false" tag="color13" getImage="GetButtonImage" onAction="OnFillColorClick" />
         </group>
         <group id="groupLineColor" label="윤곽선색" imageMso="LineColor">
-          <buttonGroup id="buttongroupLine1">
-            <button id="btnLineColor01" label="B1" tag="color01" getImage="GetButtonImage" onAction="OnLineColorClick" />
-            <button id="btnLineColor02" label="B2" tag="color02" getImage="GetButtonImage" onAction="OnLineColorClick" />
-            <button id="btnLineColor03" label="B3" tag="color03" getImage="GetButtonImage" onAction="OnLineColorClick" />
-            <button id="btnLineColor04" label="B4" tag="color04" getImage="GetButtonImage" onAction="OnLineColorClick" />
-          </buttonGroup>
-          <buttonGroup id="buttongroupLine2">
-            <button id="btnLineColor05" label="B5" tag="color05" getImage="GetButtonImage" onAction="OnLineColorClick" />
-            <button id="btnLineColor06" label="C1" tag="color06" getImage="GetButtonImage" onAction="OnLineColorClick" />
-            <button id="btnLineColor07" label="C2" tag="color07" getImage="GetButtonImage" onAction="OnLineColorClick" />
-            <button id="btnLineColor08" label="C3" tag="color08" getImage="GetButtonImage" onAction="OnLineColorClick" />
-          </buttonGroup>
-          <buttonGroup id="buttongroupLine3">
-            <button id="btnLineColor09" label="C4" tag="color09" getImage="GetButtonImage" onAction="OnLineColorClick" />
-            <button id="btnLineColor10" label="C5" tag="color10" getImage="GetButtonImage" onAction="OnLineColorClick" />
-            <button id="btnLineColor11" label="C6" tag="color11" getImage="GetButtonImage" onAction="OnLineColorClick" />
-            <button id="btnLineColor12" label="C7" tag="color12" getImage="GetButtonImage" onAction="OnLineColorClick" />
-          </buttonGroup>
+          <button id="btnLineColor01" label="B1" tag="color01" getImage="GetButtonImage" onAction="OnLineColorClick" />
+          <button id="btnLineColor05" label="B5" tag="color05" getImage="GetButtonImage" onAction="OnLineColorClick" />
+          <button id="btnLineColor09" label="C4" tag="color09" getImage="GetButtonImage" onAction="OnLineColorClick" />
+
+          <button id="btnLineColor02" label="B2" tag="color02" getImage="GetButtonImage" onAction="OnLineColorClick" />
+          <button id="btnLineColor06" label="C1" tag="color06" getImage="GetButtonImage" onAction="OnLineColorClick" />
+          <button id="btnLineColor10" label="C5" tag="color10" getImage="GetButtonImage" onAction="OnLineColorClick" />
+
+          <button id="btnLineColor03" label="B3" tag="color03" getImage="GetButtonImage" onAction="OnLineColorClick" />
+          <button id="btnLineColor07" label="C2" tag="color07" getImage="GetButtonImage" onAction="OnLineColorClick" />
+          <button id="btnLineColor11" label="C6" tag="color11" getImage="GetButtonImage" onAction="OnLineColorClick" />
+
+          <button id="btnLineColor04" label="B4" tag="color04" getImage="GetButtonImage" onAction="OnLineColorClick" />
+          <button id="btnLineColor08" label="C3" tag="color08" getImage="GetButtonImage" onAction="OnLineColorClick" />
+          <button id="btnLineColor12" label="C7" tag="color12" getImage="GetButtonImage" onAction="OnLineColorClick" />
+
           <button id="btnLineColor13" label="없음" showLabel="false" tag="color13" getImage="GetButtonImage" onAction="OnLineColorClick" />
         </group>
         <group id="groupBorderEtcTools" label="도구">
           <buttonGroup id="buttongroupLineEtc">
-            <gallery id="myGallery" label="색복사" image="color_copy" columns="4" rows="3" getItemCount="GetItemCount" getItemImage="GetItemImage" onAction="OnCopyHexColor" />
+            <menu id="mnuColor" label="색복사" image="color_copy">
+              <button id="btnCopyColor01" tag="color01" getLabel="GetButtonLabel" getImage="GetButtonImage" onAction="OnCopyColor" />
+              <button id="btnCopyColor02" tag="color02" getLabel="GetButtonLabel" getImage="GetButtonImage" onAction="OnCopyColor" />
+              <button id="btnCopyColor03" tag="color03" getLabel="GetButtonLabel" getImage="GetButtonImage" onAction="OnCopyColor" />
+              <button id="btnCopyColor04" tag="color04" getLabel="GetButtonLabel" getImage="GetButtonImage" onAction="OnCopyColor" />
+              <button id="btnCopyColor05" tag="color05" getLabel="GetButtonLabel" getImage="GetButtonImage" onAction="OnCopyColor" />
+              <button id="btnCopyColor06" tag="color06" getLabel="GetButtonLabel" getImage="GetButtonImage" onAction="OnCopyColor" />
+              <button id="btnCopyColor07" tag="color07" getLabel="GetButtonLabel" getImage="GetButtonImage" onAction="OnCopyColor" />
+              <button id="btnCopyColor08" tag="color08" getLabel="GetButtonLabel" getImage="GetButtonImage" onAction="OnCopyColor" />
+              <button id="btnCopyColor09" tag="color09" getLabel="GetButtonLabel" getImage="GetButtonImage" onAction="OnCopyColor" />
+              <button id="btnCopyColor10" tag="color10" getLabel="GetButtonLabel" getImage="GetButtonImage" onAction="OnCopyColor" />
+              <button id="btnCopyColor11" tag="color11" getLabel="GetButtonLabel" getImage="GetButtonImage" onAction="OnCopyColor" />
+              <button id="btnCopyColor12" tag="color12" getLabel="GetButtonLabel" getImage="GetButtonImage" onAction="OnCopyColor" />
+            </menu>
             <toggleButton id="tglBorderOutside" imageMso="BorderOutside" label="바깥쪽 테두리" showLabel="false" onAction="OnToggleAction" getPressed="OnGetPressed"/>
           </buttonGroup>
           <buttonGroup id="buttongroupDashStyle">

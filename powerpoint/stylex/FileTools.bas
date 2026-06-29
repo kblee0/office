@@ -121,13 +121,13 @@ Sub ExportAsPowerPointZip(control As IRibbonControl)
 End Sub
 
 
-Private Sub ApplicationRunSave(ByRef presentation As presentation, ByVal copy As Boolean, ByVal fileName As String, ByVal fileType As PowerPoint.PpSaveAsFileType)
+Private Sub ApplicationRunSave(ByRef presentation As presentation, ByVal copy As Boolean, ByVal filename As String, ByVal fileType As PowerPoint.PpSaveAsFileType)
     Dim command As String
     
     command = "Sav"
     
     If copy Then command = command & "eCopyAs" Else command = command & "eAs"
     
-    CallByName presentation, command, VbMethod, fileName, fileType
+    CallByName presentation, command, VbMethod, filename, fileType
 End Sub
 
