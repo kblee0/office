@@ -4,17 +4,35 @@ Attribute VB_Name = "StyleX"
 ' SPEC: 스타일 도구모음
 '==================================================
 
+'==================================================
+' StyleX RibbonX PowerPoint 매크로
+' SPEC: 스타일 도구모음
+'==================================================
+
 Option Explicit
 
 Const PT_PER_CM As Double = 28.34645652771
-Public gBorderOutsideMode As Boolean
+
+Public Function GetItemCount(control As IRibbonControl) As Integer
+    GetItemCount = 12
+End Function
+
+Public Function GetItemImage(control As IRibbonControl, index As Integer) As IPictureDisp
+    Set GetItemImage = gConfig.Icon("color" & Format(index+1, "00"))
+End Function
+
+Public Function GetButtonImage(control As IRibbonControl) As IPictureDisp
+    Set GetButtonImage = gConfig.Icon(control.Tag)
+End Function
 
 Sub OnToggleAction(control As IRibbonControl, pressed As Boolean)
-    If control.id = "tglBorderOutside" Then gBorderOutsideMode = pressed
+    If control.id = "tglBorderOutside" Then gToggleState.BorderOutside = pressed
+    If control.id = "tglParagraphSpace" Then gToggleState.ParagraphSpace = pressed
 End Sub
 
 Sub OnGetPressed(control As IRibbonControl, ByRef returnedVal)
-    If control.id = "tglBorderOutside" Then returnedVal = gBorderOutsideMode
+    If control.id = "tglBorderOutside" Then returnedVal = gToggleState.BorderOutside
+    If control.id = "tglParagraphSpace" Then returnedVal = gToggleState.ParagraphSpace
 End Sub
 
 '==================================================
@@ -31,10 +49,10 @@ Public Sub OnFillColorClick(control As IRibbonControl)
     
     On Error GoTo ErrorHandler
     
-    If Right(control.id, 4) = "NONE" Then
+    If gConfig.Value(control.Tag) = "#NONE" Then
         colorRGB = -1
     Else
-        colorHex = Right(control.id, 6)
+        colorHex = Right(gConfig.Value(control.Tag), 6)
         colorRGB = HexToRGB(colorHex)
     End If
     
@@ -105,10 +123,10 @@ Public Sub OnLineColorClick(control As IRibbonControl)
     On Error GoTo ErrorHandler
     
     ' 버튼 ID에서 16진수 추출 (예: L2F2F2F -> 2F2F2F)
-    If Right(control.id, 4) = "NONE" Then
+    If gConfig.Value(control.Tag) = "#NONE" Then
         colorRGB = -1
     Else
-        colorHex = Right(control.id, 6)
+        colorHex = Right(gConfig.Value(control.Tag), 6)
         colorRGB = HexToRGB(colorHex)
     End If
     
@@ -152,7 +170,7 @@ Private Sub ApplyLineColorToTable(tableShape As shape, colorRGB As Long)
     maxRow = 0
     maxCol = 0
     
-    If gBorderOutsideMode Then
+    If gToggleState.BorderOutside Then
         For row = 1 To table.Rows.Count
             For col = 1 To table.Columns.Count
                 Set cell = table.cell(row, col)
@@ -173,25 +191,25 @@ Private Sub ApplyLineColorToTable(tableShape As shape, colorRGB As Long)
             
             If cell.Selected Then
                 With cell.borders
-                    If Not gBorderOutsideMode Or row = minRow Then
+                    If Not gToggleState.BorderOutside Or row = minRow Then
                         .item(ppBorderTop).Visible = msoFalse
                         .item(ppBorderTop).Transparency = 0#
                         .item(ppBorderTop).ForeColor.RGB = colorRGB
                         If .item(ppBorderTop).weight <= 0 Then .item(ppBorderTop).weight = 1
                     End If
-                    If Not gBorderOutsideMode Or row = maxRow Then
+                    If Not gToggleState.BorderOutside Or row = maxRow Then
                         .item(ppBorderBottom).Visible = msoFalse
                         .item(ppBorderBottom).Transparency = 0#
                         .item(ppBorderBottom).ForeColor.RGB = colorRGB
                         If .item(ppBorderBottom).weight <= 0 Then .item(ppBorderBottom).weight = 1
                     End If
-                    If Not gBorderOutsideMode Or col = minCol Then
+                    If Not gToggleState.BorderOutside Or col = minCol Then
                         .item(ppBorderLeft).Visible = msoFalse
                         .item(ppBorderLeft).Transparency = 0#
                         .item(ppBorderLeft).ForeColor.RGB = colorRGB
                         If .item(ppBorderLeft).weight <= 0 Then .item(ppBorderLeft).weight = 1
                     End If
-                    If Not gBorderOutsideMode Or col = maxCol Then
+                    If Not gToggleState.BorderOutside Or col = maxCol Then
                         .item(ppBorderRight).Visible = msoFalse
                         .item(ppBorderRight).Transparency = 0#
                         .item(ppBorderRight).ForeColor.RGB = colorRGB
@@ -285,7 +303,7 @@ Private Sub ApplyLineWeightToTable(tableShape As shape, ByVal weight As Single)
     maxRow = 0
     maxCol = 0
     
-    If gBorderOutsideMode Then
+    If gToggleState.BorderOutside Then
         For row = 1 To table.Rows.Count
             For col = 1 To table.Columns.Count
                 Set cell = table.cell(row, col)
@@ -305,10 +323,10 @@ Private Sub ApplyLineWeightToTable(tableShape As shape, ByVal weight As Single)
             
             If cell.Selected Then
                 With cell.borders
-                    If Not gBorderOutsideMode Or row = minRow Then .item(ppBorderTop).weight = weight
-                    If Not gBorderOutsideMode Or row = maxRow Then .item(ppBorderBottom).weight = weight
-                    If Not gBorderOutsideMode Or col = minCol Then .item(ppBorderLeft).weight = weight
-                    If Not gBorderOutsideMode Or col = maxCol Then .item(ppBorderRight).weight = weight
+                    If Not gToggleState.BorderOutside Or row = minRow Then .item(ppBorderTop).weight = weight
+                    If Not gToggleState.BorderOutside Or row = maxRow Then .item(ppBorderBottom).weight = weight
+                    If Not gToggleState.BorderOutside Or col = minCol Then .item(ppBorderLeft).weight = weight
+                    If Not gToggleState.BorderOutside Or col = maxCol Then .item(ppBorderRight).weight = weight
                 End With
             End If
         Next col
@@ -395,7 +413,7 @@ Private Sub ApplyLineDashStyleToTable(tableShape As shape, ByVal dashStyle As Ms
     maxRow = 0
     maxCol = 0
     
-    If gBorderOutsideMode Then
+    If gToggleState.BorderOutside Then
         For row = 1 To table.Rows.Count
             For col = 1 To table.Columns.Count
                 Set cell = table.cell(row, col)
@@ -414,10 +432,10 @@ Private Sub ApplyLineDashStyleToTable(tableShape As shape, ByVal dashStyle As Ms
             Set cell = table.cell(row, col)
             If cell.Selected Then
                 With cell.borders
-                    If Not gBorderOutsideMode Or row = minRow Then .item(ppBorderTop).dashStyle = dashStyle
-                    If Not gBorderOutsideMode Or row = maxRow Then .item(ppBorderBottom).dashStyle = dashStyle
-                    If Not gBorderOutsideMode Or col = minCol Then .item(ppBorderLeft).dashStyle = dashStyle
-                    If Not gBorderOutsideMode Or col = maxCol Then .item(ppBorderRight).dashStyle = dashStyle
+                    If Not gToggleState.BorderOutside Or row = minRow Then .item(ppBorderTop).dashStyle = dashStyle
+                    If Not gToggleState.BorderOutside Or row = maxRow Then .item(ppBorderBottom).dashStyle = dashStyle
+                    If Not gToggleState.BorderOutside Or col = minCol Then .item(ppBorderLeft).dashStyle = dashStyle
+                    If Not gToggleState.BorderOutside Or col = maxCol Then .item(ppBorderRight).dashStyle = dashStyle
                 End With
             End If
         Next col
@@ -446,16 +464,8 @@ Public Sub OnFontChange(control As IRibbonControl)
     
     On Error GoTo ErrorHandler
     
-    ' 태그에서 폰트 정보 파싱 (형식: 폰트명,색상16진수)
-    fontParts = Split(control.tag, ",")
-    
-    If UBound(fontParts) < 1 Then
-        MsgBox "폰트 정보가 올바르지 않습니다.", vbExclamation
-        Exit Sub
-    End If
-    
-    fontName = Trim(fontParts(0))
-    fontColor = Trim(fontParts(1))
+    fontName = Trim(gConfig.Value(control.Tag)(0))
+    fontColor = Trim(gConfig.Value(control.Tag)(1))
     
     colorRGB = HexToRGB(fontColor)
     
@@ -503,7 +513,7 @@ ErrorHandler:
     MsgBox "텍스트를 포함한 도형을 선택해주세요.", vbExclamation
 End Sub
 
-Public Sub OnParagraphSpaceWithin(control As IRibbonControl)
+Public Sub OnParagraphSpace(control As IRibbonControl)
     Dim shapeRange As shapeRange
     Dim shape As shape
     Dim i As Long
@@ -520,9 +530,18 @@ Public Sub OnParagraphSpaceWithin(control As IRibbonControl)
     
     space = CDbl(control.tag)
     
+    If gToggleState.ParagraphSpace Then space = space * 10
+    
     If ActiveWindow.Selection.Type = ppSelectionText Then
         Set textRange = ActiveWindow.Selection.textRange
-        textRange.ParagraphFormat.SpaceWithin = space
+        With textRange.ParagraphFormat
+            If gToggleState.ParagraphSpace Then
+                .SpaceBefore = 0
+                If (.SpaceAfter + space) < 0 Then .SpaceAfter = 0 Else .SpaceAfter = Round(.SpaceAfter + space, 0)
+            Else
+                If (.SpaceWithin + space) < 1 Then .SpaceWithin = 1 Else .SpaceWithin = Round(.SpaceWithin + space, 1)
+            End If
+        End With
     Else
         Set shapeRange = ActiveWindow.Selection.shapeRange
    
@@ -536,20 +555,33 @@ Public Sub OnParagraphSpaceWithin(control As IRibbonControl)
                         Set cell = table.cell(row, col)
                         If cell.Selected Then
                             Set textRange = cell.shape.TextFrame.textRange
-                            textRange.ParagraphFormat.SpaceWithin = space
+                            With textRange.ParagraphFormat
+                                If gToggleState.ParagraphSpace Then
+                                    .SpaceBefore = 0
+                                    If (.SpaceAfter + space) < 0 Then .SpaceAfter = 0 Else .SpaceAfter = Round(.SpaceAfter + space, 0)
+                                Else
+                                    If (.SpaceWithin + space) < 1 Then .SpaceWithin = 1 Else .SpaceWithin = Round(.SpaceWithin + space, 1)
+                                End If
+                            End With
                         End If
                     Next
                 Next
             Else
                 Set textRange = shape.TextFrame.textRange
-                textRange.ParagraphFormat.SpaceWithin = space
+                With textRange.ParagraphFormat
+                    If gToggleState.ParagraphSpace Then
+                        .SpaceBefore = 0
+                        If (.SpaceAfter + space) < 0 Then .SpaceAfter = 0 Else .SpaceAfter = Round(.SpaceAfter + space, 0)
+                    Else
+                        If (.SpaceWithin + space) < 1 Then .SpaceWithin = 1 Else .SpaceWithin = Round(.SpaceWithin + space, 1)
+                    End If
+                End With
             End If
         Next
     End If
     
     Exit Sub
 ErrorHandler:
-    MsgBox "텍스트를 포함한 도형을 선택해주세요.", vbExclamation
 End Sub
 
 

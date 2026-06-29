@@ -8,78 +8,65 @@
             <control idMso="FontSize" showLabel="false" />
           </box>
           <buttonGroup id="groupFont1">
-          <button id="btnFont1" image="C231815" label="제목(일반)" tag="+mj-ea,#231815" onAction="OnFontChange" />
-          <button id="btnFont2" image="CFFFFFF" label="제목(반전)" tag="+mj-ea,#FFFFFF" onAction="OnFontChange" />
+          <button id="btnFont1" label="제목(일반)" tag="title01" getImage="GetButtonImage" onAction="OnFontChange" />
+          <button id="btnFont2" label="제목(반전)" tag="title02" getImage="GetButtonImage" onAction="OnFontChange" />
           </buttonGroup>
           <buttonGroup id="groupFont2">
-          <button id="btnFont3" image="C231815" label="본문(일반)" tag="+mn-ea,#231815" onAction="OnFontChange" />
-          <button id="btnFont4" image="CFFFFFF" label="본문(반전)" tag="+mn-ea,#FFFFFF" onAction="OnFontChange" />
+          <button id="btnFont3" label="본문(일반)" tag="text01" getImage="GetButtonImage" onAction="OnFontChange" />
+          <button id="btnFont4" label="본문(반전)" tag="text02" getImage="GetButtonImage" onAction="OnFontChange" />
           </buttonGroup>
-          <button id="btnFont5" image="CE60012" label="본문(강조1)" tag="+mn-ea,#E60012" onAction="OnFontChange" />
-          <button id="btnFont6" image="C850107" label="본문(강조2)" tag="+mn-ea,#850107" onAction="OnFontChange" />
-          <button id="btnFont7" image="CA6A6A6" label="본문(강조3)" tag="+mn-ea,#A6A6A6" onAction="OnFontChange" />
-          <button id="btnPgfS1" imageMso="LineSpacing" label="1.0" tag="1.0" onAction="OnParagraphSpaceWithin" />
-          <button id="btnPgfS2" imageMso="LineSpacing" label="1.2" tag="1.2" onAction="OnParagraphSpaceWithin" />
-          <button id="btnPgfS3" imageMso="LineSpacing" label="1.3" tag="1.3" onAction="OnParagraphSpaceWithin" />
+          <button id="btnFont5" label="본문(강조1)" tag="text03" getImage="GetButtonImage" onAction="OnFontChange" />
+          <button id="btnFont6" label="본문(강조2)" tag="text04" getImage="GetButtonImage" onAction="OnFontChange" />
+          <button id="btnFont7" label="본문(강조3)" tag="text05" getImage="GetButtonImage" onAction="OnFontChange" />
+          <toggleButton id="tglParagraphSpace" imageMso="ParagraphSpaceBefore" label="문단간격" showLabel="false" onAction="OnToggleAction" getPressed="OnGetPressed"/>
+          <button id="btnPgfS2" imageMso="ParagraphSpacingIncrease" tag="+0.1" onAction="OnParagraphSpace" />
+          <button id="btnPgfS3" imageMso="ParagraphSpacingDecrease" tag="-0.1" onAction="OnParagraphSpace" />
         </group>
         <group id="groupFill" label="채우기색" imageMso="FillColorPicker">
           <buttonGroup id="buttongroupFill1">
-            <button id="CFFFFFF" image="CFFFFFF" label="B1" onAction="OnFillColorClick" />
-            <button id="CEAEAEA" image="CEAEAEA" label="B2" onAction="OnFillColorClick" />
-            <button id="CA6A6A6" image="CA6A6A6" label="B3" onAction="OnFillColorClick" />
-            <button id="C5A626A" image="C5A626A" label="B4" onAction="OnFillColorClick" />
+            <button id="btnFillColor01" label="B1" tag="color01" getImage="GetButtonImage" onAction="OnFillColorClick" />
+            <button id="btnFillColor02" label="B2" tag="color02" getImage="GetButtonImage" onAction="OnFillColorClick" />
+            <button id="btnFillColor03" label="B3" tag="color03" getImage="GetButtonImage" onAction="OnFillColorClick" />
+            <button id="btnFillColor04" label="B4" tag="color04" getImage="GetButtonImage" onAction="OnFillColorClick" />
           </buttonGroup>
           <buttonGroup id="buttongroupFill2">
-            <button id="C2B3A4A" image="C2B3A4A" label="B5" onAction="OnFillColorClick" />
-            <button id="C231815" image="C231815" label="C1" onAction="OnFillColorClick" />
-            <button id="CFCE6E6" image="CFCE6E6" label="C2" onAction="OnFillColorClick" />
-            <button id="CE60012" image="CE60012" label="C3" onAction="OnFillColorClick" />
+            <button id="btnFillColor05" label="B5" tag="color05" getImage="GetButtonImage" onAction="OnFillColorClick" />
+            <button id="btnFillColor06" label="C1" tag="color06" getImage="GetButtonImage" onAction="OnFillColorClick" />
+            <button id="btnFillColor07" label="C2" tag="color07" getImage="GetButtonImage" onAction="OnFillColorClick" />
+            <button id="btnFillColor08" label="C3" tag="color08" getImage="GetButtonImage" onAction="OnFillColorClick" />
           </buttonGroup>
           <buttonGroup id="buttongroupFill3">
-            <button id="C850107" image="C850107" label="C4" onAction="OnFillColorClick" />
-            <button id="C4A90E2" image="C4A90E2" label="C5" onAction="OnFillColorClick" />
-            <button id="C3B7A57" image="C3B7A57" label="C6" onAction="OnFillColorClick" />
-            <button id="CE09924" image="CE09924" label="C7" onAction="OnFillColorClick" />
+            <button id="btnFillColor09" label="C4" tag="color09" getImage="GetButtonImage" onAction="OnFillColorClick" />
+            <button id="btnFillColor10" label="C5" tag="color10" getImage="GetButtonImage" onAction="OnFillColorClick" />
+            <button id="btnFillColor11" label="C6" tag="color11" getImage="GetButtonImage" onAction="OnFillColorClick" />
+            <button id="btnFillColor12" label="C7" tag="color12" getImage="GetButtonImage" onAction="OnFillColorClick" />
           </buttonGroup>
-          <button id="CNONE" image="CNONE" label="없음" showLabel="false" onAction="OnFillColorClick" />
+          <button id="btnFillColor13" label="없음" showLabel="false" tag="color13" getImage="GetButtonImage" onAction="OnFillColorClick" />
         </group>
         <group id="groupLineColor" label="윤곽선색" imageMso="LineColor">
           <buttonGroup id="buttongroupLine1">
-            <button id="LFFFFFF" image="CFFFFFF" label="B1" onAction="OnLineColorClick" />
-            <button id="LEAEAEA" image="CEAEAEA" label="B2" onAction="OnLineColorClick" />
-            <button id="LA6A6A6" image="CA6A6A6" label="B3" onAction="OnLineColorClick" />
-            <button id="L5A626A" image="C5A626A" label="B4" onAction="OnLineColorClick" />
+            <button id="btnLineColor01" label="B1" tag="color01" getImage="GetButtonImage" onAction="OnLineColorClick" />
+            <button id="btnLineColor02" label="B2" tag="color02" getImage="GetButtonImage" onAction="OnLineColorClick" />
+            <button id="btnLineColor03" label="B3" tag="color03" getImage="GetButtonImage" onAction="OnLineColorClick" />
+            <button id="btnLineColor04" label="B4" tag="color04" getImage="GetButtonImage" onAction="OnLineColorClick" />
           </buttonGroup>
           <buttonGroup id="buttongroupLine2">
-            <button id="L2B3A4A" image="C2B3A4A" label="B5" onAction="OnLineColorClick" />
-            <button id="L231815" image="C231815" label="C1" onAction="OnLineColorClick" />
-            <button id="LFCE6E6" image="CFCE6E6" label="C2" onAction="OnLineColorClick" />
-            <button id="LE60012" image="CE60012" label="C3" onAction="OnLineColorClick" />
+            <button id="btnLineColor05" label="B5" tag="color05" getImage="GetButtonImage" onAction="OnLineColorClick" />
+            <button id="btnLineColor06" label="C1" tag="color06" getImage="GetButtonImage" onAction="OnLineColorClick" />
+            <button id="btnLineColor07" label="C2" tag="color07" getImage="GetButtonImage" onAction="OnLineColorClick" />
+            <button id="btnLineColor08" label="C3" tag="color08" getImage="GetButtonImage" onAction="OnLineColorClick" />
           </buttonGroup>
           <buttonGroup id="buttongroupLine3">
-            <button id="L850107" image="C850107" label="C4" onAction="OnLineColorClick" />
-            <button id="L4A90E2" image="C4A90E2" label="C5" onAction="OnLineColorClick" />
-            <button id="L3B7A57" image="C3B7A57" label="C6" onAction="OnLineColorClick" />
-            <button id="LE09924" image="CE09924" label="C7" onAction="OnLineColorClick" />
+            <button id="btnLineColor09" label="C4" tag="color09" getImage="GetButtonImage" onAction="OnLineColorClick" />
+            <button id="btnLineColor10" label="C5" tag="color10" getImage="GetButtonImage" onAction="OnLineColorClick" />
+            <button id="btnLineColor11" label="C6" tag="color11" getImage="GetButtonImage" onAction="OnLineColorClick" />
+            <button id="btnLineColor12" label="C7" tag="color12" getImage="GetButtonImage" onAction="OnLineColorClick" />
           </buttonGroup>
-          <button id="LNONE" image="CNONE" label="없음" showLabel="false" onAction="OnLineColorClick" />
+          <button id="btnLineColor13" label="없음" showLabel="false" tag="color13" getImage="GetButtonImage" onAction="OnLineColorClick" />
         </group>
         <group id="groupBorderEtcTools" label="도구">
           <buttonGroup id="buttongroupLineEtc">
-            <gallery id="myGallery" label="색복사" image="color_copy" columns="4" rows="4" onAction="OnCopyHexColor">
-              <item id="MFFFFFF" image="CFFFFFF" label="B1" />
-              <item id="MEAEAEA" image="CEAEAEA" label="B2" />
-              <item id="MA6A6A6" image="CA6A6A6" label="B3" />
-              <item id="M5A626A" image="C5A626A" label="B4" />
-              <item id="M2B3A4A" image="C2B3A4A" label="B5" />
-              <item id="M231815" image="C231815" label="C1" />
-              <item id="MFCE6E6" image="CFCE6E6" label="C2" />
-              <item id="ME60012" image="CE60012" label="C3" />
-              <item id="M850107" image="C850107" label="C4" />
-              <item id="M4A90E2" image="C4A90E2" label="C5" />
-              <item id="M3B7A57" image="C3B7A57" label="C6" />
-              <item id="ME09924" image="CE09924" label="C7" />
-            </gallery>
+            <gallery id="myGallery" label="색복사" image="color_copy" columns="4" rows="3" getItemCount="GetItemCount" getItemImage="GetItemImage" onAction="OnCopyHexColor" />
             <toggleButton id="tglBorderOutside" imageMso="BorderOutside" label="바깥쪽 테두리" showLabel="false" onAction="OnToggleAction" getPressed="OnGetPressed"/>
           </buttonGroup>
           <buttonGroup id="buttongroupDashStyle">

@@ -1,4 +1,4 @@
-del color\*.png
+del res\*.png
 
 for %%C in (
 FFFFFF
@@ -22,7 +22,7 @@ C:\home\local\ImageMagick\magick ^
   -draw "roundrectangle 2,2 29,29 1,1" ^
   -fill "#%%C" ^
   -draw "rectangle 4,4 27,27" ^
-  "color\C%%C.png"
+  "res\#%%C.png"
 )
 
 C:\home\local\ImageMagick\magick ^
@@ -41,4 +41,4 @@ C:\home\local\ImageMagick\magick ^
   -fill "#ABABAB" -draw "rectangle 16,16 21,21" ^
   -fill "#ABABAB" -draw "rectangle 10,22 15,27" ^
   -fill "#ABABAB" -draw "rectangle 22,22 27,27" ^
-  "color\CNONE.png"
+  "res\#NONE.png"
