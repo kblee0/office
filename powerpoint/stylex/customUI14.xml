@@ -2,7 +2,7 @@
   <ribbon>
     <tabs>
       <tab id="customTab" label="스타일" insertAfterMso="TabHome">
-        <group id="groupFontTools" label="폰트 도구">
+        <group id="groupFontTools" label="글꼴/줄간격">
           <box id="boxFont" boxStyle="horizontal">
             <comboBox idMso="Font" showLabel="false" sizeString="WWWWWWWWWW" />
             <control idMso="FontSize" showLabel="false" />
@@ -41,7 +41,7 @@
 
           <button id="btnFillColor13" label="없음" showLabel="false" tag="color13" getImage="GetButtonImage" onAction="OnFillColorClick" />
         </group>
-        <group id="groupLineColor" label="윤곽선색" imageMso="LineColor">
+        <group id="groupLineColor" label="테두리색" imageMso="LineColor">
           <button id="btnLineColor01" label="B1" tag="color01" getImage="GetButtonImage" onAction="OnLineColorClick" />
           <button id="btnLineColor05" label="B5" tag="color05" getImage="GetButtonImage" onAction="OnLineColorClick" />
           <button id="btnLineColor09" label="C4" tag="color09" getImage="GetButtonImage" onAction="OnLineColorClick" />
@@ -60,7 +60,7 @@
 
           <button id="btnLineColor13" label="없음" showLabel="false" tag="color13" getImage="GetButtonImage" onAction="OnLineColorClick" />
         </group>
-        <group id="groupBorderEtcTools" label="도구">
+        <group id="groupBorderEtcTools" label="색상/테두리">
           <buttonGroup id="buttongroupLineEtc">
             <menu id="mnuColor" label="색복사" image="color_copy">
               <button id="btnCopyColor01" tag="color01" getLabel="GetButtonLabel" getImage="GetButtonImage" onAction="OnCopyColor" />
@@ -87,7 +87,7 @@
           <button id="btnTableBorder10" image="rect_10pt" label="1.0pt" tag="1.0" onAction="OnLineWeight" />
           <button id="btnTableBorder15" image="rect_15pt" label="1.5pt" tag="1.5" onAction="OnLineWeight" />
         </group>
-        <group id="groupRectTools" label="둥근사각형도구 (cm)">
+        <group id="groupRectTools" label="사각형 모서리 편집">
           <buttonGroup id="buttongroupRec1">
             <button id="btnOnShapeTypeAdjustments00510" label=".1" image="rect_ar" tag="5,0.1,-1" onAction="OnShapeTypeAdjustments" />
             <button id="btnOnShapeTypeAdjustments00520" label=".2" image="rect_ar" tag="5,0.2,-1" onAction="OnShapeTypeAdjustments" />
