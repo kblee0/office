@@ -45,7 +45,8 @@ Sub ExportAsPowerPointAddIn(control As IRibbonControl)
     ' 추가 기능이 이미 로드되어 실행 중이어서 권한 잠금이 걸린 경우 예외 처리
     If Err.Number <> 0 Then
         MsgBox "추가 기능 파일 생성 중 오류가 발생했습니다." & vbCrLf & _
-               "기존에 동일한 추가 기능이 파워포인트에 현재 로드(실행) 중인지 확인해 주세요.", vbCritical, "저장 실패"
+               "기존에 동일한 추가 기능이 파워포인트에 현재 로드(실행) 중인지 확인해 주세요." & vbCrLf & Err.Description _
+               , vbCritical, "저장 실패"
         Err.Clear
         Exit Sub
     End If

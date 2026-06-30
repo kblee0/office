@@ -18,7 +18,7 @@ Public Type ToggleState
 End Type
 
 ' --- Windows API 선언 (32비트 / 64비트 모두 호환) ---
-Private Type GUID
+Private Type guid
     Data1 As Long
     Data2 As Integer
     Data3 As Integer
@@ -55,7 +55,7 @@ End Type
     Private Declare PtrSafe Function GdipLoadImageFromFile Lib "gdiplus" (ByVal filename As LongPtr, ByRef image As LongPtr) As Long
     Private Declare PtrSafe Function GdipCreateHBITMAPFromBitmap Lib "gdiplus" (ByVal bitmap As LongPtr, ByRef hbmReturn As LongPtr, ByVal background As Long) As Long
     Private Declare PtrSafe Function GdipDisposeImage Lib "gdiplus" (ByVal image As LongPtr) As Long
-    Private Declare PtrSafe Function OleCreatePictureIndirect Lib "oleaut32.dll" (ByRef PicDesc As PICTDESC, ByRef RefIID As GUID, ByVal fPictureOwnsHandle As Long, ByRef IPic As IPictureDisp) As Long
+    Private Declare PtrSafe Function OleCreatePictureIndirect Lib "oleaut32.dll" (ByRef PicDesc As PICTDESC, ByRef RefIID As guid, ByVal fPictureOwnsHandle As Long, ByRef IPic As IPictureDisp) As Long
     Private Declare PtrSafe Function DeleteObject Lib "gdi32" (ByVal hObject As LongPtr) As Long
 #Else
     Private Declare Function GdiplusStartup Lib "gdiplus" (ByRef token As Long, ByRef InputBuf As GdiplusStartupInput, ByVal OutputBuf As Long) As Long
@@ -99,19 +99,23 @@ Private Sub initConfig()
     On Error Resume Next
     
     Dim addIn As addIn
-    Dim GUID As String
+    Dim guid As String
     
-    GUID = Application.run("AppGuid")
-    If GUID = APP_GUID Then
-        gConfig.FullName = ActivePresentation.FullName
-        gConfig.Path = ActivePresentation.Path
-        gConfig.IniFile = Left(gConfig.FullName, InStrRev(gConfig.FullName, ".")) & "ini"
-        gConfig.Initialized = True
-    Else
+    If Not ActivePresentation Is Nothing Then
+        guid = Application.run("'" & ActivePresentation.Name & "'!AppGuid")
+        If guid = APP_GUID Then
+            gConfig.FullName = ActivePresentation.FullName
+            gConfig.Path = ActivePresentation.Path
+            gConfig.IniFile = Left(gConfig.FullName, InStrRev(gConfig.FullName, ".")) & "ini"
+            gConfig.Initialized = True
+        End If
+    End If
+    
+    If Not gConfig.Initialized Then
         For Each addIn In Application.AddIns
             If addIn.Loaded Then
-                GUID = Application.run("'" & addIn.Name & "'!AppGuid")
-                If GUID = APP_GUID Then
+                guid = Application.run("'" & addIn.Name & "'!AppGuid")
+                If guid = APP_GUID Then
                     gConfig.FullName = addIn.FullName
                     gConfig.Path = addIn.Path
                     gConfig.IniFile = Left(gConfig.FullName, InStrRev(gConfig.FullName, ".")) & "ini"
@@ -141,15 +145,20 @@ Public Sub RibbonOnLoad(ByVal ribbon As IRibbonUI)
     Dim image As IPictureDisp
     
     initConfig
-
+    
+    If Dir(gConfig.IniFile) = "" Then
+        MsgBox "설정파일(" & gConfig.IniFile & ")이 존재하지 않아 초기화 실패했습니다.", vbCritical, "리본 생성 오류"
+        Exit Sub
+    End If
+    
     theme = ReadIni("common", "theme", gConfig.IniFile)
 
     For i = 1 To 13
         key = "color" & Format(i, "00")
         val = Trim(ReadIni(theme, key, gConfig.IniFile))
+        gConfig.Value(key) = val
         Set image = LoadPNG(GetResFullName(val & ".png"))
         Set gConfig.Icon(key) = image
-        gConfig.Value(key) = val
     Next
 
     For i = 1 To 7
@@ -203,7 +212,7 @@ Public Function LoadPNG(ByVal FilePath As String) As IPictureDisp
     Dim hBitmap As Long
 #End If
     Dim gdiInput As GdiplusStartupInput
-    Dim pAsg As GUID
+    Dim pAsg As guid
     Dim pDesc As PICTDESC
     
     ' GDI+ 초기화

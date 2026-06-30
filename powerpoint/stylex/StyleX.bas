@@ -10,6 +10,7 @@ Const PT_PER_CM As Double = 28.34645652771
 
 Public Sub GetButtonImage(control As IRibbonControl, ByRef image)
     Set image = gConfig.Icon(control.tag)
+    If image Is Nothing Then Set image = Application.CommandBars.GetImageMso("TraceError", 32, 32)
 End Sub
 
 Public Sub GetButtonLabel(control As IRibbonControl, ByRef color)
