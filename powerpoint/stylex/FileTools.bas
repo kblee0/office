@@ -63,6 +63,9 @@ End Sub
 ' Purpose   : 현재 프레젠테이션의 전체 슬라이드와 마스터 서식을 복사하여 .zip 확장자로 저장합니다.
 '---------------------------------------------------------------------------------------
 Sub ExportAsPowerPointZip(control As IRibbonControl)
+    PtToolSvAsZip
+    Exit Sub
+    
     Dim srcPres As presentation
     Dim dstPres As presentation
     Dim zipPath As String
@@ -122,13 +125,13 @@ Sub ExportAsPowerPointZip(control As IRibbonControl)
 End Sub
 
 
-Private Sub ApplicationRunSave(ByRef presentation As presentation, ByVal copy As Boolean, ByVal filename As String, ByVal fileType As PowerPoint.PpSaveAsFileType)
+Private Sub ApplicationRunSave(ByRef presentation As presentation, ByVal copy As Boolean, ByVal fileName As String, ByVal fileType As PowerPoint.PpSaveAsFileType)
     Dim command As String
     
     command = "Sav"
     
     If copy Then command = command & "eCopyAs" Else command = command & "eAs"
     
-    CallByName presentation, command, VbMethod, filename, fileType
+    CallByName presentation, command, VbMethod, fileName, fileType
 End Sub
 
